@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- With very few exceptions, parameters that are internal to this script begin with "cfg_".  Avoid that prefix in your parameters, please -->
+<CONFIGURE>
+  <SETUP>
+    <!-- set this to "true" to enable really verbose debugging -->
+    <Ncs_set name="cfg_debug" value="false"/>
+    <!-- cfg_ncs_home comes from JSW config, cfg_nisgs_home should be up one level -->
+    <Ncs_set name="cfg_nisgs_home" value="{cfg_ncs_home}{/}.."/>
+    <!-- site.properties file (which is in cfg_ncs_home/..) -->
+    <Ncs_readFile file="{cfg_nisgs_home}{/}site.properties"/>
+    <!-- required by DSM:  -->
+    <Ncs_set name="cfg_stationName" value="Mod L1A Terra"/>
+    <Ncs_set name="cfg_groupTag" value="Mod-L1A grp1"/>
+    <Ncs_set name="cfg_siteName" value="{NISGS_SITE_NAME}"/>
+    <Ncs_set name="dataDirectory" value="{DSM_DATA_DIRECTORY}"/>
+    <Ncs_set name="cfg_stationLog" value="station.stationlog"/>
+    <!--  Initialize wrapped algorithm   -->
+    <Ncs_print text="Initializing algorithm Mod L1A Terra"/>
+    <InitAlgorithm debug="{cfg_debug}"
+      file="{cfg_nisgs_home}/SPA/modisl1db/wrapper/l0tol1/installation.xml" result="cfg_algo.OBJ"/>
+    <Ncs_print text="Algorithm Mod L1A Terra initialized"/>
+    <Ncs_set name="version" value="modisl1db1.8"/>
+  </SETUP>
+  <EXECUTE>
+    <!-- get first input product  -->
+    <!--No wildcards in primary product-->
+    <Ncs_set name="otherInputTypes" value=""/>
+    <Ncs_log text="Reserving product drl.terra.modis.pds"/>
+    <Dsm_command blockflag="true" class="DSM" debug="{cfg_debug}"
+      log="true" method="reserveProduct" result="drl.terra.modis.pds.OBJ">
+      <String value="drl.terra.modis.pds"/>
+      <String value="{otherInputTypes}"/>
+    </Dsm_command>
+    <!-- Put the reserved product object into "reservedProduct" -->
+    <!-- (so NCS can find it to fail this job if needed) -->
+    <Ncs_copy copy="reservedProduct" source="drl.terra.modis.pds.OBJ"/>
+    <!-- get pass  -->
+    <Ncs_log text="Getting pass for drl.terra.modis.pds"/>
+    <Dsm_command class="drl.terra.modis.pds.OBJ" debug="{cfg_debug}"
+      method="getPass" result="cfg_pass"/>
+    <!-- get date  -->
+    <Ncs_log text="Getting date/time"/>
+    <Ncs_date name="cfg_currenttime" setValue="now"/>
+    <Dsm_command class="drl.terra.modis.pds.OBJ" debug="{cfg_debug}"
+      method="getStartTime" result="cfg_starttime"/>
+    <Dsm_command class="drl.terra.modis.pds.OBJ" debug="{cfg_debug}"
+      method="getStopTime" result="cfg_stoptime"/>
+    <Ncs_log text="scan start time is {cfg_starttime}"/>
+    <Ncs_log text="scan end time is {cfg_stoptime}"/>
+    <Ncs_log text="current time is {cfg_currenttime}"/>
+    
+
+    <!-- Extract the hour, and munge it for quarter-day -->
+    <!--<Ncs_date debug="{cfg_debug}" getValue="cfg_quarterday"
+      name="cfg_starttime" pattern="HH"/>
+    <Ncs_editValue debug="{cfg_debug}" name="{cfg_quarterday}"
+      pattern="21|22|23|00|01|02" replacement="00" result="cfg_quarterday"/>
+    <Ncs_editValue debug="{cfg_debug}" name="{cfg_quarterday}"
+      pattern="03|04|05|06|07|08" replacement="06" result="cfg_quarterday"/>
+    <Ncs_editValue debug="{cfg_debug}" name="{cfg_quarterday}"
+      pattern="09|10|11|12|13|14" replacement="12" result="cfg_quarterday"/>
+    <Ncs_editValue debug="{cfg_debug}" name="{cfg_quarterday}"
+      pattern="15|16|17|18|19|20" replacement="18" result="cfg_quarterday"/>
+    <Ncs_log text="cfg_quarterday is {cfg_quarterday}"/>-->
+    <!-- get satellite -->
+    <Dsm_command class="drl.terra.modis.pds.OBJ" debug="{cfg_debug}"
+      method="getSpacecraft" result="cfg_satellite"/>
+    <!-- get file name  -->
+    <Ncs_log text="Getting file name (DATA resource)"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}" method="getProductPath" result="drl.terra.modis.pds">
+      <Object value="drl.terra.modis.pds.OBJ"/>
+    </Dsm_command>
+    <Ncs_log text="File name is {drl.terra.modis.pds}"/>
+    <!-- get remaining products  -->
+    <!-- set up the product filename variables  -->
+    <!--	foo.filename = filename (with absolute path removed)
+		foo.base = filename with extension removed
+		foo.ext = extension
+		The things we do to get around the limitations of this
+		XML-based scripting junk ... -->
+    <Ncs_getMatch name="{drl.terra.modis.pds}" pattern="[^{/}]*$" result="drl.terra.modis.pds.filename"/>
+    <Ncs_set name="drl.terra.modis.pds.base" value="{drl.terra.modis.pds.filename}"/>
+    <Ncs_set name="drl.terra.modis.pds.ext" value=""/>
+    <Ncs_test name="{drl.terra.modis.pds.filename}" pattern="\\." result="hasadot"/>
+    <Ncs_getMatch name="{drl.terra.modis.pds.filename}" pattern="[^.]*$"
+      result="drl.terra.modis.pds.ext" runFlag="{hasadot}"/>
+    <Ncs_editValue name="{drl.terra.modis.pds.filename}"
+      pattern="\\.{drl.terra.modis.pds.ext}$" replacement=""
+      result="drl.terra.modis.pds.base" runFlag="{hasadot}"/>
+<!-- pre time stamp -->
+<Dsm_command class="DSM" debug="{cfg_debug}" method="getTimeWindow" result="cfg_timewindow_pre">
+<String value=""/> <!-- *****************24 does not work somehow, Ask Bob -->
+<String value=""/>
+<String value="14"/>  
+<String value=""/>
+</Dsm_command>
+<!-- leapsec-->
+<Dsm_command debug="{cfg_debug}" resultUnboundOK="false" waitflag="true" result="leapsec" class="DSM" method="getTimedAncillary">
+<String value="drl.leapsec"/>
+<Object value="cfg_currenttime" /> <!-- *****************need to be changed to cfg_currenttime -->
+<Object value="cfg_timewindow_pre"/>
+</Dsm_command>
+<!-- utcpole-->
+<Dsm_command debug="{cfg_debug}" resultUnboundOK="false" waitflag="true" result="utcpole" class="DSM" method="getTimedAncillary">
+<String value="drl.utcpole"/>
+<Object value="cfg_currenttime" /> <!-- *****************need to be changed to cfg_currenttime -->
+<Object value="cfg_timewindow_pre"/>
+</Dsm_command>
+<Ncs_log runFlag="true" text="leapsec used is {leapsec}"/>
+<Ncs_log runFlag="true" text="utcpole used is {utcpole}"/>   
+
+
+    <Dsm_command class="cfg_pass" method="getAos" result="passDate"/>
+    <!--<Ncs_date getValue="starttime" name="passDate"/>-->
+    <Ncs_date getValue="starttime" name="cfg_starttime"/>
+    <Ncs_set name="sat" value="{cfg_satellite}"/>
+    <Ncs_set name="geocheck_threshold" value="50"/>
+    <!-- and set up the output file names  -->
+    <!-- (accumulate them in allOutputs) -->
+    <Ncs_set name="allOutputs" value=""/>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="getProductDirectory" result="productDirectory">
+      <String value="drl.terra.modis.mxd01"/>
+    </Dsm_command>
+    <Ncs_set name="drl.terra.modis.mxd01" value="{dataDirectory}{productDirectory}{/}MOD01.{starttime}.hdf"/>
+    <Ncs_set name="allOutputs" value="{allOutputs} {drl.terra.modis.mxd01}"/>
+    <Ncs_log text="storing drl.terra.modis.mxd01 at {drl.terra.modis.mxd01}"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="getProductDirectory" result="productDirectory">
+      <String value="drl.terra.modis.mxd03"/>
+    </Dsm_command>
+    <Ncs_set name="drl.terra.modis.mxd03" value="{dataDirectory}{productDirectory}{/}MOD03.{starttime}.hdf"/>
+    <Ncs_set name="allOutputs" value="{allOutputs} {drl.terra.modis.mxd03}"/>
+    <Ncs_log text="storing drl.terra.modis.mxd03 at {drl.terra.modis.mxd03}"/>
+    <Ncs_log text="allOutputs are: {allOutputs}"/>
+    <Ncs_set name="modis.pds" value="{drl.terra.modis.pds}"/>
+    <Ncs_set name="modis.mxd01" value="{drl.terra.modis.mxd01}"/>
+    <Ncs_set name="modis.mxd03" value="{drl.terra.modis.mxd03}"/>
+    <!-- run the algorithm (to massive applause)  -->
+    <Ncs_log text="launching algorithm Mod L1A Terra"/>
+    <RunAlgorithm algorithm="cfg_algo.OBJ" debug="{cfg_debug}"/>
+    <!-- and clean everything up - walk the outputs
+			creating new Products, decorating them with Resources,
+			and Ancillaries, and Storing them  -->
+    <Ncs_copy copy="drl.terra.modis.mxd01" source="modis.mxd01"/>
+    <Ncs_copy copy="drl.terra.modis.mxd03" source="modis.mxd03"/>
+    <Ncs_log runFlag="true" text="Creating new product drl.terra.modis.mxd01"/>
+    <Dsm_command class="Product" debug="{cfg_debug}" method="new"
+      result="drl.terra.modis.mxd01.OBJ" runFlag="true">
+      <Object value="drl.terra.modis.pds.OBJ"/>
+      <String value="drl.terra.modis.mxd01"/>
+    </Dsm_command>
+    <Dsm_command class="drl.terra.modis.mxd01.OBJ" debug="{cfg_debug}"
+      method="setAlgorithm" runFlag="true">
+      <String value="Mod L1A Terra"/>
+      <String value="{version}"/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Adding file {drl.terra.modis.mxd01} (as DATA resource)"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="addDataResource" runFlag="true">
+      <Object value="drl.terra.modis.mxd01.OBJ"/>
+      <String value="{drl.terra.modis.mxd01}"/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Adding ancillary drl.leapsec (file {leapsec})"/>
+    <Dsm_command class="drl.terra.modis.mxd01.OBJ" debug="{cfg_debug}"
+      method="addContributingResource" runFlag="true">
+      <String value="{leapsec}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Adding ancillary drl.utcpole (file {utcpole})"/>
+    <Dsm_command class="drl.terra.modis.mxd01.OBJ" debug="{cfg_debug}"
+      method="addContributingResource" runFlag="true">
+      <String value="{utcpole}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Storing product drl.terra.modis.mxd01"/>
+    <!-- register crefl with DSM  -->
+    <Dsm_command class="DSM" debug="{cfg_debug}" method="storeProduct" runFlag="true">
+      <Object value="drl.terra.modis.mxd01.OBJ"/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Creating new product drl.terra.modis.mxd03"/>
+    <Dsm_command class="Product" debug="{cfg_debug}" method="new"
+      result="drl.terra.modis.mxd03.OBJ" runFlag="true">
+      <Object value="drl.terra.modis.pds.OBJ"/>
+      <String value="drl.terra.modis.mxd03"/>
+    </Dsm_command>
+    <Dsm_command class="drl.terra.modis.mxd03.OBJ" debug="{cfg_debug}"
+      method="setAlgorithm" runFlag="true">
+      <String value="Mod L1A Terra"/>
+      <String value="{version}"/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Adding file {drl.terra.modis.mxd03} (as DATA resource)"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="addDataResource" runFlag="true">
+      <Object value="drl.terra.modis.mxd03.OBJ"/>
+      <String value="{drl.terra.modis.mxd03}"/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Adding ancillary drl.leapsec (file {leapsec})"/>
+    <Dsm_command class="drl.terra.modis.mxd03.OBJ" debug="{cfg_debug}"
+      method="addContributingResource" runFlag="true">
+      <String value="{leapsec}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Adding ancillary drl.utcpole (file {utcpole})"/>
+    <Dsm_command class="drl.terra.modis.mxd03.OBJ" debug="{cfg_debug}"
+      method="addContributingResource" runFlag="true">
+      <String value="{utcpole}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Storing product drl.terra.modis.mxd03"/>
+    <!-- register crefl with DSM  -->
+    <Dsm_command class="DSM" debug="{cfg_debug}" method="storeProduct" runFlag="true">
+      <Object value="drl.terra.modis.mxd03.OBJ"/>
+    </Dsm_command>
+    <!-- release reserved product to DSM  -->
+    <Ncs_log text="Releasing reserved product drl.terra.modis.pds"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}" method="releaseProduct">
+      <Object value="drl.terra.modis.pds.OBJ"/>
+    </Dsm_command>
+    <Ncs_log text="Done with algorithm Mod L1A Terra"/>
+  </EXECUTE>
+</CONFIGURE>

@@ -1,0 +1,369 @@
+<?xml version="1.0"?>
+
+<Algorithm>
+ <Name>MODL0toL1</Name>
+
+ <Parameters>
+	<sat/> <geocheck_threshold optional="true"/>
+ </Parameters>
+ <Inputs>
+	<modis.pds/>
+	<gbad_att optional="true"/>
+	<gbad_eph optional="true"/>
+        <leapsec optional="true"/>
+	<utcpole optional="true"/>
+
+ </Inputs>
+
+ <Outputs>
+        <modis.mxd01/>
+	<modis.mxd03/>
+ </Outputs>
+
+ <Executables>
+	<ML1Acmd/>
+	<MGEOcmd/>
+	<Updatecmd/>
+ </Executables>
+
+ <TemplateFiles/>
+
+ <Commands>
+	<!-- Delete and make TempDir -->
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}TempDir"/>
+	<Ncs_run cmd="mkdir TempDir"/>
+
+
+	<!-- Setting the temp variable-->
+	<Ncs_set name="temp" value=""/>
+
+	<!-- This is done just in case a previous run has failed before deleting att/eph files -->
+	<!-- Deleting ATT and EPH files -->
+	<!-- Creating fake att/eph so that getFileNames doesn't come back empty and crash the wrapper-->
+	<Ncs_run cmd="touch AM1ATx" />
+	<Ncs_run cmd="touch AM1EPx" />
+
+	<Ncs_set name="Delete_ATT" value="false"/>
+	<Ncs_set name="Delete_EPH" value="false"/>
+
+	<!-- Looks for files that fit the pattern - if real att/eph then set Delete_*** to true -->
+	<Ncs_getFileNames directory="{cfg_runDirectory}" listName="temp" pattern="AM1AT.*"/>
+	<Ncs_test name="{temp}" pattern="AM1ATT.*" result="Delete_ATT"/>
+	<Ncs_getFileNames directory="{cfg_runDirectory}" listName="temp" pattern="AM1EP.*"/>
+	<Ncs_test name="{temp}" pattern="AM1EPH.*" result="Delete_EPH"/>
+
+	<!-- If Delete_*** is true then delete att/eph -->
+	<Ncs_getFileNames runFlag="{Delete_ATT}" directory="{cfg_runDirectory}" listName="temp" pattern="AM1ATT.*"/>
+	<Ncs_deleteFile runFlag="{Delete_ATT}" file="{cfg_runDirectory}{/}{temp}"/>
+	<Ncs_getFileNames runFlag="{Delete_EPH}" directory="{cfg_runDirectory}" listName="temp" pattern="AM1EPH.*"/>
+	<Ncs_deleteFile runFlag="{Delete_EPH}" file="{cfg_runDirectory}{/}{temp}"/>
+	
+	<!-- Delete fake att/eph -->
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}AM1ATx"/>
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}AM1EPx"/>
+	<!-- End of deleting previous att/eph files-->
+
+
+
+	<!-- This is done just in case a previous run has failed before deleting att/eph files -->
+	<!-- Deleting Aqua ATT and EPH files -->
+	<!-- Creating fake att/eph so that getFileNames doesn't come back empty and crash the wrapper-->
+	<Ncs_run cmd="touch PM1ATx" />
+	<Ncs_run cmd="touch PM1EPx" />
+
+	<Ncs_set name="Delete_ATT" value="false"/>
+	<Ncs_set name="Delete_EPH" value="false"/>
+
+	<!-- Looks for files that fit the pattern - if real att/eph then set Delete_*** to true -->
+	<Ncs_getFileNames directory="{cfg_runDirectory}" listName="temp" pattern="PM1AT.*"/>
+	<Ncs_test name="{temp}" pattern="PM1ATT.*" result="Delete_ATT"/>
+	<Ncs_getFileNames directory="{cfg_runDirectory}" listName="temp" pattern="PM1EP.*"/>
+	<Ncs_test name="{temp}" pattern="PM1EPH.*" result="Delete_EPH"/>
+
+	<!-- If Delete_*** is true then delete att/eph -->
+	<Ncs_getFileNames runFlag="{Delete_ATT}" directory="{cfg_runDirectory}" listName="temp" pattern="PM1ATT.*"/>
+	<Ncs_deleteFile runFlag="{Delete_ATT}" file="{cfg_runDirectory}{/}{temp}"/>
+	<Ncs_getFileNames runFlag="{Delete_EPH}" directory="{cfg_runDirectory}" listName="temp" pattern="PM1EPH.*"/>
+	<Ncs_deleteFile runFlag="{Delete_EPH}" file="{cfg_runDirectory}{/}{temp}"/>
+	
+	<!-- Delete fake att/eph -->
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}PM1ATx"/>
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}PM1EPx"/>
+	<!-- End of Deleting ATT and EPH files -->
+
+
+
+
+
+
+	<!-- log and pcf directory -->	
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}L1A_logs-pcf"/>
+
+	<Ncs_set name="ancillary" value="{modis_L1_home}{/}run{/}var{/}modis" />
+
+
+	<!--Checks if mission is Aqua or Terra-->
+	<Ncs_test name="{sat}" pattern="AQUA" result="Aqua"/>
+	<Ncs_test name="{sat}" pattern="TERRA" result="Terra"/>
+
+
+	<!-- check for utcpole -->
+	<Ncs_boundp name="utcpole" value="utc-p"/>
+	<Ncs_test name="{utc-p}" pattern="false" result="Update"/>
+
+	<Ncs_run debug="true" 
+		runFlag="{Update}" standardFile="stdfileUpdate" errorFile="errfileUpdate"
+   		cmd="{Updatecmd} {sat} -v"
+		>
+
+		<env name="DBHOME" value="{modis_L1_home}"/>
+		<env name="SEADAS" value="{modis_L1_home}"/>
+		<env name="OCSSWROOT" value="{modis_L1_home}"/>
+		<env name="MODIS_GEO" value="."/>
+		<env name="MODIS_L1A" value="."/>
+		<env name="MODIS_L1B" value="."/>
+		<env name="LIB3_BIN" value="{modis_L1_home}{/}run{/}bin"/>
+		<env name="OCDATAROOT" value="{modis_L1_home}{/}run{/}data"/>
+		<env name="MODIS_ATTEPH" value="{modis_L1_home}{/}var{/}modis{/}atteph"/>
+		<env name="AQUA_REFL_LUT" value="."/>
+		<env name="AQUA_EMIS_LUT" value="."/>
+		<env name="AQUA_QA_LUT" value="."/>
+		<env name="TERRA_REFL_LUT" value="."/>
+		<env name="TERRA_EMIS_LUT" value="."/>
+		<env name="TERRA_QA_LUT" value="."/>
+		<env name="PATH" value="{modis_L1_home}{/}run{/}scripts:{modis_L1_home}{/}run{/}bin:{PATH}"/>
+	</Ncs_run>
+
+
+	<!-- check for leapsec -->
+	<Ncs_boundp name="leapsec" value="leapsec-p"/>
+	<Ncs_test name="{leapsec-p}" pattern="false" result="Update"/>
+
+	<Ncs_run debug="true" 
+		runFlag="{Update}" standardFile="stdfileUpdate" errorFile="errfileUpdate"
+   		cmd="{Updatecmd} {sat} -v"
+		>
+
+		<env name="DBHOME" value="{modis_L1_home}"/>
+		<env name="SEADAS" value="{modis_L1_home}"/>
+		<env name="OCSSWROOT" value="{modis_L1_home}"/>
+		<env name="MODIS_GEO" value="."/>
+		<env name="MODIS_L1A" value="."/>
+		<env name="MODIS_L1B" value="."/>
+		<env name="LIB3_BIN" value="{modis_L1_home}{/}run{/}bin"/>
+		<env name="OCDATAROOT" value="{modis_L1_home}{/}run{/}data"/>
+		<env name="MODIS_ATTEPH" value="{modis_L1_home}{/}var{/}modis{/}atteph"/>
+		<env name="AQUA_REFL_LUT" value="."/>
+		<env name="AQUA_EMIS_LUT" value="."/>
+		<env name="AQUA_QA_LUT" value="."/>
+		<env name="TERRA_REFL_LUT" value="."/>
+		<env name="TERRA_EMIS_LUT" value="."/>
+		<env name="TERRA_QA_LUT" value="."/>
+		<env name="PATH" value="{modis_L1_home}{/}run{/}scripts:{modis_L1_home}{/}run{/}bin:{PATH}"/>
+	</Ncs_run>
+
+	<!-- If utcpole/leapsec were given then copy them over -->
+	<CopyFile runFlag="{utc-p}" source="{utcpole}" destination="{ancillary}/utcpole.dat" />
+	<CopyFile runFlag="{leapsec-p}" source="{leapsec}" destination="{ancillary}/leapsec.dat" />
+
+	<!-- check for geocheck_threshold -->
+	<Ncs_boundp name="geocheck_threshold" value="geocheck_threshold-p"/>
+	<Ncs_test name="{geocheck_threshold-p}" pattern="false" result="GeoThresholdNotSet"/>
+	<Ncs_set runFlag="{GeoThresholdNotSet}" name="geocheck_threshold" value="95"/>
+
+
+  	<!-- Run L0 to L1 -->
+  	<Ncs_run debug="true" 
+		runFlag="true" standardFile="stdfileL1A" errorFile="errfileL1A"
+   		cmd="{ML1Acmd} {modis.pds} -m {sat} -o L1A.hdf --log"
+		>
+
+		<env name="DBHOME" value="{modis_L1_home}"/>
+		<env name="SEADAS" value="{modis_L1_home}"/>
+		<env name="OCSSWROOT" value="{modis_L1_home}"/>
+		<env name="MODIS_GEO" value="."/>
+		<env name="MODIS_L1A" value="."/>
+		<env name="MODIS_L1B" value="."/>
+		<env name="LIB3_BIN" value="{modis_L1_home}{/}run{/}bin"/>
+		<env name="OCDATAROOT" value="{modis_L1_home}{/}run{/}data"/>
+		<env name="MODIS_ATTEPH" value="{modis_L1_home}{/}var{/}modis{/}atteph"/>
+		<env name="AQUA_REFL_LUT" value="."/>
+		<env name="AQUA_EMIS_LUT" value="."/>
+		<env name="AQUA_QA_LUT" value="."/>
+		<env name="TERRA_REFL_LUT" value="."/>
+		<env name="TERRA_EMIS_LUT" value="."/>
+		<env name="TERRA_QA_LUT" value="."/>
+		<env name="OCSSW_BIN" value="{modis_L1_home}{/}run{/}bin"/>
+		<env name="PATH" value="{modis_L1_home}{/}run{/}scripts:{modis_L1_home}{/}run{/}bin:{PATH}"/>
+	</Ncs_run>
+
+	<!-- Moving L1A.hdf to TempDir-->
+	<CopyFile source="{cfg_runDirectory}{/}L1A.hdf" destination="{cfg_runDirectory}{/}TempDir{/}L1A.hdf" />
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}L1A.hdf"/>
+
+
+
+	<Ncs_boundp name="gbad_att" value="gbad_att-p"/>
+	<Ncs_test name="{gbad_att-p}" pattern="false" result="Blank_att"/>
+	<Ncs_set runFlag="{Blank_att}" name="att_arg" value=""/>
+	<Ncs_set runFlag="{gbad_att-p}" name="att_arg" value="-a {gbad_att}"/>
+
+	<Ncs_boundp name="gbad_eph" value="gbad_eph-p"/>
+	<Ncs_test name="{gbad_eph-p}" pattern="false" result="Blank_eph"/>
+	<Ncs_set runFlag="{Blank_eph}" name="eph_arg" value=""/>
+	<Ncs_set runFlag="{gbad_eph-p}" name="eph_arg" value="-e {gbad_eph}"/>
+
+  	<!-- Run GEO for Aqua-->
+  	<Ncs_run debug="true" 
+		runFlag="{Aqua}" standardFile="stdfileAquaGEO" errorFile="errfileAquaGEO"
+   		cmd="{MGEOcmd} {cfg_runDirectory}{/}TempDir{/}L1A.hdf -o GEO.hdf {att_arg} {eph_arg} --threshold {geocheck_threshold} -v --enable-dem --log --refreshDB --ancdb={cfg_runDirectory}{/}..{/}ancillary_data.db"
+		>
+
+		<env name="DBHOME" value="{modis_L1_home}"/>
+		<env name="SEADAS" value="{modis_L1_home}"/>
+		<env name="OCSSWROOT" value="{modis_L1_home}"/>
+		<env name="MODIS_GEO" value="."/>
+		<env name="MODIS_L1A" value="."/>
+		<env name="MODIS_L1B" value="."/>
+		<env name="LIB3_BIN" value="{modis_L1_home}{/}run{/}bin"/>
+		<env name="OCDATAROOT" value="{modis_L1_home}{/}run{/}data"/>
+		<env name="MODIS_ATTEPH" value="{modis_L1_home}{/}var{/}modis{/}atteph"/>
+		<env name="AQUA_REFL_LUT" value="."/>
+		<env name="AQUA_EMIS_LUT" value="."/>
+		<env name="AQUA_QA_LUT" value="."/>
+		<env name="TERRA_REFL_LUT" value="."/>
+		<env name="TERRA_EMIS_LUT" value="."/>
+		<env name="TERRA_QA_LUT" value="."/>
+		<env name="OCSSW_BIN" value="{modis_L1_home}{/}run{/}bin"/>
+		<env name="PATH" value="{modis_L1_home}{/}run{/}scripts:{modis_L1_home}{/}run{/}bin:{PATH}"/>
+	</Ncs_run>
+
+
+  	<!-- Run GEO for Terra-->
+  	<Ncs_run debug="true" 
+		runFlag="{Terra}" standardFile="stdfileTerraGEO" errorFile="errfileTerraGEO"
+   		cmd="{MGEOcmd} {cfg_runDirectory}{/}TempDir{/}L1A.hdf -o GEO.hdf --threshold {geocheck_threshold} -v --log --enable-dem --refreshDB "
+		>
+
+		<env name="DBHOME" value="{modis_L1_home}"/>
+		<env name="SEADAS" value="{modis_L1_home}"/>
+		<env name="OCSSWROOT" value="{modis_L1_home}"/>
+		<env name="MODIS_GEO" value="."/>
+		<env name="MODIS_L1A" value="."/>
+		<env name="MODIS_L1B" value="."/>
+		<env name="LIB3_BIN" value="{modis_L1_home}{/}run{/}bin"/>
+		<env name="OCDATAROOT" value="{modis_L1_home}{/}run{/}data"/>
+		<env name="MODIS_ATTEPH" value="{cfg_runDirectory}"/>
+		<env name="AQUA_REFL_LUT" value="."/>
+		<env name="AQUA_EMIS_LUT" value="."/>
+		<env name="AQUA_QA_LUT" value="."/>
+		<env name="TERRA_REFL_LUT" value="."/>
+		<env name="TERRA_EMIS_LUT" value="."/>
+		<env name="TERRA_QA_LUT" value="."/>
+		<env name="OCSSW_BIN" value="{modis_L1_home}{/}run{/}bin"/>
+		<env name="PATH" value="{modis_L1_home}{/}run{/}scripts:{modis_L1_home}{/}run{/}bin:{PATH}"/>
+	</Ncs_run>
+
+	<!-- Moving GEO.hdf to TempDir-->
+	<CopyFile source="{cfg_runDirectory}{/}GEO.hdf" destination="{cfg_runDirectory}{/}TempDir{/}GEO.hdf" />
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}GEO.hdf"/>
+
+
+
+	<!-- Moving L1A Output -->
+	<CopyFile source="{cfg_runDirectory}{/}TempDir{/}L1A.hdf" destination="{modis.mxd01}"/>
+
+	<!-- Moving GEO Output -->
+	<CopyFile source="{cfg_runDirectory}{/}TempDir{/}GEO.hdf" destination="{modis.mxd03}"/>
+
+	<!-- Deleting Temp Dir -->
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}TempDir"/>
+
+
+
+
+	<!-- Setting the temp variable-->
+	<Ncs_set name="temp" value=""/>
+
+
+
+	<!-- Deleting Terra ATT and EPH files -->
+	<!-- Creating fake att/eph so that getFileNames doesn't come back empty and crash the wrapper-->
+	<Ncs_run runFlag="{Terra}" cmd="touch AM1ATx" />
+	<Ncs_run runFlag="{Terra}" cmd="touch AM1EPx" />
+
+	<Ncs_set name="Delete_ATT" value="false"/>
+	<Ncs_set name="Delete_EPH" value="false"/>
+
+	<!-- Looks for files that fit the pattern - if real att/eph then set Delete_*** to true -->
+	<Ncs_getFileNames runFlag="{Terra}" directory="{cfg_runDirectory}" listName="temp" pattern="AM1AT.*"/>
+	<Ncs_test runFlag="{Terra}" name="{temp}" pattern="AM1ATT.*" result="Delete_ATT"/>
+	<Ncs_getFileNames runFlag="{Terra}" directory="{cfg_runDirectory}" listName="temp" pattern="AM1EP.*"/>
+	<Ncs_test runFlag="{Terra}" name="{temp}" pattern="AM1EPH.*" result="Delete_EPH"/>
+
+	<!-- If Delete_*** is true then delete att/eph -->
+	<Ncs_getFileNames runFlag="{Delete_ATT}" directory="{cfg_runDirectory}" listName="temp" pattern="AM1ATT.*"/>
+	<Ncs_deleteFile runFlag="{Delete_ATT}" file="{cfg_runDirectory}{/}{temp}"/>
+	<Ncs_getFileNames runFlag="{Delete_EPH}" directory="{cfg_runDirectory}" listName="temp" pattern="AM1EPH.*"/>
+	<Ncs_deleteFile runFlag="{Delete_EPH}" file="{cfg_runDirectory}{/}{temp}"/>
+	
+	<!-- Delete fake att/eph -->
+	<Ncs_deleteFile runFlag="{Terra}" file="{cfg_runDirectory}{/}AM1ATx"/>
+	<Ncs_deleteFile runFlag="{Terra}" file="{cfg_runDirectory}{/}AM1EPx"/>
+	<!-- End of Deleting ATT and EPH files -->
+
+
+	<!-- Deleting Aqua ATT and EPH files -->
+	<!-- Creating fake att/eph so that getFileNames doesn't come back empty and crash the wrapper-->
+	<Ncs_run runFlag="{Aqua}" cmd="touch PM1ATx" />
+	<Ncs_run runFlag="{Aqua}" cmd="touch PM1EPx" />
+
+	<Ncs_set name="Delete_ATT" value="false"/>
+	<Ncs_set name="Delete_EPH" value="false"/>
+
+	<!-- Looks for files that fit the pattern - if real att/eph then set Delete_*** to true -->
+	<Ncs_getFileNames runFlag="{Aqua}" directory="{cfg_runDirectory}" listName="temp" pattern="PM1AT.*"/>
+	<Ncs_test runFlag="{Aqua}" name="{temp}" pattern="PM1ATT.*" result="Delete_ATT"/>
+	<Ncs_getFileNames runFlag="{Aqua}" directory="{cfg_runDirectory}" listName="temp" pattern="PM1EP.*"/>
+	<Ncs_test runFlag="{Aqua}" name="{temp}" pattern="PM1EPH.*" result="Delete_EPH"/>
+
+	<!-- If Delete_*** is true then delete att/eph -->
+	<Ncs_getFileNames runFlag="{Delete_ATT}" directory="{cfg_runDirectory}" listName="temp" pattern="PM1ATT.*"/>
+	<Ncs_deleteFile runFlag="{Delete_ATT}" file="{cfg_runDirectory}{/}{temp}"/>
+	<Ncs_getFileNames runFlag="{Delete_EPH}" directory="{cfg_runDirectory}" listName="temp" pattern="PM1EPH.*"/>
+	<Ncs_deleteFile runFlag="{Delete_EPH}" file="{cfg_runDirectory}{/}{temp}"/>
+	
+	<!-- Delete fake att/eph -->
+	<Ncs_deleteFile runFlag="{Aqua}" file="{cfg_runDirectory}{/}PM1ATx"/>
+	<Ncs_deleteFile runFlag="{Aqua}" file="{cfg_runDirectory}{/}PM1EPx"/>
+	<!-- End of Deleting ATT and EPH files -->
+
+
+
+
+
+	<!-- Moving logs and pcf files to logs-pcf directory -->
+	<Ncs_run cmd="mkdir L1A_logs-pcf" />
+	<CopyFile source="{cfg_runDirectory}{/}LogReport.GEO.hdf" destination="{cfg_runDirectory}{/}L1A_logs-pcf"/>
+	<CopyFile source="{cfg_runDirectory}{/}LogReport.L1A.hdf" destination="{cfg_runDirectory}{/}L1A_logs-pcf"/>
+	<CopyFile source="{cfg_runDirectory}{/}LogStatus.GEO.hdf" destination="{cfg_runDirectory}{/}L1A_logs-pcf"/>
+	<CopyFile source="{cfg_runDirectory}{/}LogStatus.L1A.hdf" destination="{cfg_runDirectory}{/}L1A_logs-pcf"/>
+	<CopyFile source="{cfg_runDirectory}{/}LogUser.GEO.hdf" destination="{cfg_runDirectory}{/}L1A_logs-pcf"/>
+	<CopyFile source="{cfg_runDirectory}{/}LogUser.L1A.hdf" destination="{cfg_runDirectory}{/}L1A_logs-pcf"/>
+	<CopyFile source="{cfg_runDirectory}{/}GEO.hdf.pcf" destination="{cfg_runDirectory}{/}L1A_logs-pcf"/>
+	<CopyFile source="{cfg_runDirectory}{/}L1A.hdf.pcf" destination="{cfg_runDirectory}{/}L1A_logs-pcf"/>
+
+
+
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}LogReport.GEO.hdf"/>
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}LogReport.L1A.hdf"/>
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}LogStatus.GEO.hdf"/>
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}LogStatus.L1A.hdf"/>
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}LogUser.GEO.hdf"/>
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}LogUser.L1A.hdf"/>
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}GEO.hdf.pcf"/>
+	<Ncs_deleteFile file="{cfg_runDirectory}{/}L1A.hdf.pcf"/>
+
+
+ </Commands>
+</Algorithm>

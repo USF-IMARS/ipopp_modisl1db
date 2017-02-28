@@ -1,0 +1,84 @@
+<NISGS-SPA-INSTALL>
+<OutputTypes>
+<OutputType
+	name="drl.aqua.modis.mxd01"
+	spacecraft="AQUA"
+	sensor="modis"
+	description="MYD01 Granule"
+	level="1"
+	is-directory="gsfcdata/aqua/modis/level1/"
+	filepattern="'MYD01.'yyDDDHHmmss'.hdf'" />
+<OutputType
+	name="drl.aqua.modis.mxd03"
+	spacecraft="AQUA"
+	sensor="modis"
+	description="Geolocated Granule"
+	level="1"
+	is-directory="gsfcdata/aqua/modis/level1/"
+	filepattern="'MYD03.'yyDDDHHmmss'.hdf'" />
+<OutputType
+	name="drl.aqua.modis.mxd021km"
+	spacecraft="AQUA"
+	sensor="modis"
+	description="MYD02 1 km Granule"
+	level="1"
+	is-directory="gsfcdata/aqua/modis/level1/"
+	filepattern="'MYD021KM.'yyDDDHHmmss'.hdf'" />
+<OutputType
+	name="drl.aqua.modis.mxd02hkm"
+	spacecraft="AQUA"
+	sensor="modis"
+	description="MYD02 1/2 km Granule"
+	level="1"
+	is-directory="gsfcdata/aqua/modis/level1/"
+	filepattern="'MYD02HKM.'yyDDDHHmmss'.hdf'" />
+<OutputType
+	name="drl.aqua.modis.mxd02qkm"
+	spacecraft="AQUA"
+	sensor="modis"
+	description="MYD02 1/4 km Granule"
+	level="1"
+	is-directory="gsfcdata/aqua/modis/level1/"
+	filepattern="'MYD02QKM.'yyDDDHHmmss'.hdf'" />
+<OutputType
+	name="drl.terra.modis.mxd01"
+	spacecraft="terra"
+	sensor="modis"
+	description="MOD01 Granule"
+	level="1"
+	is-directory="gsfcdata/terra/modis/level1/"
+	filepattern="'MOD01.'yyDDDHHmmss'.hdf'" />
+<OutputType
+	name="drl.terra.modis.mxd03"
+	spacecraft="terra"
+	sensor="modis"
+	description="Geolocated Granule"
+	level="1"
+	is-directory="gsfcdata/terra/modis/level1/"
+	filepattern="'MOD03.'yyDDDHHmmss'.hdf'" />
+<OutputType
+	name="drl.terra.modis.mxd021km"
+	spacecraft="terra"
+	sensor="modis"
+	description="MOD02 1 km Granule"
+	level="1"
+	is-directory="gsfcdata/terra/modis/level1/"
+	filepattern="'MOD021KM.'yyDDDHHmmss'.hdf'" />
+<OutputType
+	name="drl.terra.modis.mxd02hkm"
+	spacecraft="terra"
+	sensor="modis"
+	description="MOD02 1/2 km Granule"
+	level="1"
+	is-directory="gsfcdata/terra/modis/level1/"
+	filepattern="'MOD02HKM.'yyDDDHHmmss'.hdf'" />
+<OutputType
+	name="drl.terra.modis.mxd02qkm"
+	spacecraft="terra"
+	sensor="modis"
+	description="MOD02 1/4 km Granule"
+	level="1"
+	is-directory="gsfcdata/terra/modis/level1/"
+	filepattern="'MOD02QKM.'yyDDDHHmmss'.hdf'" />
+</OutputTypes>
+</NISGS-SPA-INSTALL>

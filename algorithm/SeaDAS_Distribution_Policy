@@ -1,0 +1,73 @@
+/*========================================================================*/
+              SeaDAS/NASA Goddard Space Flight Center (GSFC)
+
+         Software Distribution Policy for Public Domain Software
+/*========================================================================*/
+
+The SeaDAS source code and documentation are in the public domain, available
+without fee for educational, research, non-commercial and commercial purposes.
+Users may distribute the binary or source code to third parties provided that
+this statement appears on all copies and that no charge is made for such
+copies.  
+
+NASA GSFC MAKES NO REPRESENTATIONS ABOUT THE SUITABILITY OF THE SOFTWARE FOR
+ANY PURPOSE.  IT IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
+NEITHER NASA GSFC NOR THE U.S. GOVERNMENT SHALL BE LIABLE FOR ANY DAMAGES 
+SUFFERED BY THE USER OF THIS SOFTWARE.
+
+We ask, but do not require the following regarding derived works for the public
+domain:
+
+   1. That a message be included acknowledging The SeaDAS Development Group
+      at NASA GSFC.
+
+   2. That modifications which may be considered generally useful, be forwarded
+      so that they might be incorporated into future releases of SeaDAS.
+
+Regarding the commercial use of SeaDAS, be aware that SeaDAS does integrate 
+software from several sources which may include embedded copyright notices and 
+which may have some limitations with respect to commercial sales. Specifically
+we include the NCSA HDF libraries, a few instances of source code
+developed by the University of Miami and used in OBPG data processing, and
+modified versions of ITTVis's IDL programs. Anyone considering modifying and
+selling SeaDAS should read all the embedded copyright and copying notices and
+proceed at their own risk.
+
+By copying this software, you, the user, agree to abide by the conditions
+and understandings with respect to any software which is marked with a
+public domain notice.
+
+
+ACKNOWLEDGEMENTS:
+----------------
+
+The main portion of the SeaDAS software package was developed by:
+
+   - The SeaDAS Development Group at NASA GSFC, Greenbelt, Maryland
+
+   - The Ocean Biology Processing Group (OBPG) at NASA GSFC, Greenbelt, 
+      Maryland.
+
+The SeaDAS software package also includes:
+
+   - The HDF libraries which were developed by the National Center for
+     Supercomputing Applications (NCSA) at the University of Illinois (UI)
+
+   - Modified IDL procedures originally developed by ITTVis (formerly
+     Research Systems Inc.).
+
+   - MODIS processing source code from both the NASA MODIS Science Data
+     Support Team (SDST) and the NASA MODIS Characterization Support Team
+     (MCST).
+
+   - Code for accessing data within MERIS files provided by Brockmann Consult
+     in the form of the C-library with source code for reading Envisat data
+     products (epr_api-2.0.5, from 28.10.2004) available from
+     http://www.brockmann-consult.de/beam/downloads.html).
+
+   - Various scientific source code fragments and algorithms from
+     researchers and programmers all over the world.
+
+/*========================================================================*/
+
+

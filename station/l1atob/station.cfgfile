@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- With very few exceptions, parameters that are internal to this script begin with "cfg_".  Avoid that prefix in your parameters, please -->
+<CONFIGURE>
+  <SETUP>
+    <!-- set this to "true" to enable really verbose debugging -->
+    <Ncs_set name="cfg_debug" value="false"/>
+    <!-- cfg_ncs_home comes from JSW config, cfg_nisgs_home should be up one level -->
+    <Ncs_set name="cfg_nisgs_home" value="{cfg_ncs_home}{/}.."/>
+    <!-- site.properties file (which is in cfg_ncs_home/..) -->
+    <Ncs_readFile file="{cfg_nisgs_home}{/}site.properties"/>
+    <!-- required by DSM:  -->
+    <Ncs_set name="cfg_stationName" value="Mod L1B"/>
+    <Ncs_set name="cfg_groupTag" value="Mod-L1B grp1"/>
+    <Ncs_set name="cfg_siteName" value="{NISGS_SITE_NAME}"/>
+    <Ncs_set name="dataDirectory" value="{DSM_DATA_DIRECTORY}"/>
+    <Ncs_set name="cfg_stationLog" value="station.stationlog"/>
+    <!--  Initialize wrapped algorithm   -->
+    <Ncs_print text="Initializing algorithm Mod L1B"/>
+    <InitAlgorithm debug="{cfg_debug}"
+      file="{cfg_nisgs_home}{/}SPA{/}modisl1db{/}wrapper{/}l1atob{/}installation.xml" result="cfg_algo.OBJ"/>
+    <Ncs_print text="Algorithm Mod L1B initialized"/>
+    <Ncs_set name="version" value="modisl1db1.8"/>
+  </SETUP>
+  <EXECUTE>
+    <!-- get first input product  -->
+    <!--Go get the matching product-->
+    <Ncs_set name="sat" value="%"/>
+    <Ncs_log text="Reserving product drl.{sat}.modis.mxd01"/>
+    <!--Note that here, and only here, does the {wildcard} have the right SQL value-->
+    <Ncs_set name="otherInputTypes" value="drl.{sat}.modis.mxd03"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="reserveProductLikeProductType" result="cfg_wild.OBJ">
+      <String value="drl.%.modis.mxd01"/>
+      <String value="{otherInputTypes}"/>
+    </Dsm_command>
+    <!-- get product type-->
+    <Dsm_command class="cfg_wild.OBJ" debug="{cfg_debug}"
+      method="getProductType" result="cfg_prodtype"/>
+    <!--Chop off everything but the wild text-->
+    <Ncs_set name="sat" value="{cfg_prodtype}"/>
+    <Ncs_editValue name="{sat}" pattern="^drl." replacement="" result="sat"/>
+    <Ncs_editValue name="{sat}" pattern=".modis.mxd01$" replacement="" result="sat"/>
+    <!--And put the product object where it belongs-->
+    <Ncs_log text="Putting reserved object where it belongs"/>
+    <Ncs_copy copy="drl.{sat}.modis.mxd01.OBJ" source="cfg_wild.OBJ"/>
+    <!-- Put the reserved product object into "reservedProduct" -->
+    <!-- (so NCS can find it to fail this job if needed) -->
+    <Ncs_copy copy="reservedProduct" source="drl.{sat}.modis.mxd01.OBJ"/>
+    <!-- get pass  -->
+    <Ncs_log text="Getting pass for drl.{sat}.modis.mxd01"/>
+    <Dsm_command class="drl.{sat}.modis.mxd01.OBJ" debug="{cfg_debug}"
+      method="getPass" result="cfg_pass"/>
+    <!-- get date  -->
+    <Ncs_log text="Getting date/time"/>
+    <Dsm_command class="drl.{sat}.modis.mxd01.OBJ" debug="{cfg_debug}"
+      method="getStartTime" result="cfg_starttime"/>
+    <Dsm_command class="drl.{sat}.modis.mxd01.OBJ" debug="{cfg_debug}"
+      method="getStopTime" result="cfg_stoptime"/>
+    <Ncs_date name="cfg_currenttime" setValue="now"/>
+    <Ncs_log text="scan start time is {cfg_starttime}"/>
+    <Ncs_log text="scan end time is {cfg_stoptime}"/>
+    <Ncs_log text="current time is {cfg_currenttime}"/>
+    <!-- Extract the hour, and munge it for quarter-day -->
+    <!--<Ncs_date debug="{cfg_debug}" getValue="cfg_quarterday"
+      name="cfg_starttime" pattern="HH"/>
+    <Ncs_editValue debug="{cfg_debug}" name="{cfg_quarterday}"
+      pattern="21|22|23|00|01|02" replacement="00" result="cfg_quarterday"/>
+    <Ncs_editValue debug="{cfg_debug}" name="{cfg_quarterday}"
+      pattern="03|04|05|06|07|08" replacement="06" result="cfg_quarterday"/>
+    <Ncs_editValue debug="{cfg_debug}" name="{cfg_quarterday}"
+      pattern="09|10|11|12|13|14" replacement="12" result="cfg_quarterday"/>
+    <Ncs_editValue debug="{cfg_debug}" name="{cfg_quarterday}"
+      pattern="15|16|17|18|19|20" replacement="18" result="cfg_quarterday"/>
+    <Ncs_log text="cfg_quarterday is {cfg_quarterday}"/>-->
+    <!-- get satellite -->
+    <Dsm_command class="drl.{sat}.modis.mxd01.OBJ" debug="{cfg_debug}"
+      method="getSpacecraft" result="cfg_satellite"/>
+    <!-- get file name  -->
+    <Ncs_log text="Getting file name (DATA resource)"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}" method="getProductPath" result="drl.{sat}.modis.mxd01">
+      <Object value="drl.{sat}.modis.mxd01.OBJ"/>
+    </Dsm_command>
+    <Ncs_log text="File name is {drl.{sat}.modis.mxd01}"/>
+    <!-- get remaining products  -->
+    <Ncs_log text="Getting product drl.{sat}.modis.mxd03"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}" method="fetchProduct" result="drl.{sat}.modis.mxd03.OBJ">
+      <String value="drl.{sat}.modis.mxd03"/>
+      <Object value="cfg_pass"/>
+      <Object value="cfg_starttime"/>
+    </Dsm_command>
+    <!-- get file names  -->
+    <Dsm_command class="DSM" debug="{cfg_debug}" method="getProductPath" result="drl.{sat}.modis.mxd03">
+      <Object value="drl.{sat}.modis.mxd03.OBJ"/>
+    </Dsm_command>
+    <Ncs_log text="File name is {drl.{sat}.modis.mxd03}"/>
+    <!-- set up the product filename variables  -->
+    <!--	foo.filename = filename (with absolute path removed)
+		foo.base = filename with extension removed
+		foo.ext = extension
+		The things we do to get around the limitations of this
+		XML-based scripting junk ... -->
+    <Ncs_getMatch name="{drl.{sat}.modis.mxd01}" pattern="[^{/}]*$" result="drl.{sat}.modis.mxd01.filename"/>
+    <Ncs_set name="drl.{sat}.modis.mxd01.base" value="{drl.{sat}.modis.mxd01.filename}"/>
+    <Ncs_set name="drl.{sat}.modis.mxd01.ext" value=""/>
+    <Ncs_test name="{drl.{sat}.modis.mxd01.filename}" pattern="\\." result="hasadot"/>
+    <Ncs_getMatch name="{drl.{sat}.modis.mxd01.filename}"
+      pattern="[^.]*$" result="drl.{sat}.modis.mxd01.ext" runFlag="{hasadot}"/>
+    <Ncs_editValue name="{drl.{sat}.modis.mxd01.filename}"
+      pattern="\\.{drl.{sat}.modis.mxd01.ext}$" replacement=""
+      result="drl.{sat}.modis.mxd01.base" runFlag="{hasadot}"/>
+    <Ncs_getMatch name="{drl.{sat}.modis.mxd03}" pattern="[^{/}]*$" result="drl.{sat}.modis.mxd03.filename"/>
+    <Ncs_set name="drl.{sat}.modis.mxd03.base" value="{drl.{sat}.modis.mxd03.filename}"/>
+    <Ncs_set name="drl.{sat}.modis.mxd03.ext" value=""/>
+    <Ncs_test name="{drl.{sat}.modis.mxd03.filename}" pattern="\\." result="hasadot"/>
+    <Ncs_getMatch name="{drl.{sat}.modis.mxd03.filename}"
+      pattern="[^.]*$" result="drl.{sat}.modis.mxd03.ext" runFlag="{hasadot}"/>
+    <Ncs_editValue name="{drl.{sat}.modis.mxd03.filename}"
+      pattern="\\.{drl.{sat}.modis.mxd03.ext}$" replacement=""
+      result="drl.{sat}.modis.mxd03.base" runFlag="{hasadot}"/>
+
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="getSatTimedAncillary" result="modis_reflective_luts">  
+      <String value="drl.{sat}_modis_reflective_luts"/>
+      <Object value="cfg_currenttime"/>
+      <String value="{cfg_satellite}"/>
+    </Dsm_command>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="getSatTimedAncillary" result="modis_emissive_luts">   
+      <String value="drl.{sat}_modis_emissive_luts"/>
+      <Object value="cfg_currenttime"/>
+      <String value="{cfg_satellite}"/>
+    </Dsm_command>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="getSatTimedAncillary" result="modis_qa_luts">  
+      <String value="drl.{sat}_modis_qa_luts"/>
+      <Object value="cfg_currenttime"/>
+      <String value="{cfg_satellite}"/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="modis_reflective_luts used is {modis_reflective_luts}"/>
+    <Ncs_log runFlag="true" text="modis_emissive_luts used is {modis_emissive_luts}"/>
+    <Ncs_log runFlag="true" text="modis_qa_luts used is {modis_qa_luts}"/>
+
+
+    <Ncs_print text="sat is |{sat}|"/>
+    <Ncs_set name="satletter" value="O"/>
+    <Ncs_test name="{sat}" pattern="^[Aa][Qq][Uu][Aa]$" result="aqua-p"/>
+    <Ncs_print text="aqua-p is {aqua-p}"/>
+    <Ncs_set name="satletter" runFlag="{aqua-p}" value="Y"/>
+    <!--<Dsm_command class="cfg_pass" method="getAos" result="passDate"/>-->
+    <!--<Ncs_date getValue="starttime" name="passDate"/>-->
+    <Ncs_date getValue="starttime" name="cfg_starttime"/>
+    <!-- and set up the output file names  -->
+    <!-- (accumulate them in allOutputs) -->
+    <Ncs_set name="allOutputs" value=""/>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="getProductDirectory" result="productDirectory">
+      <String value="drl.{sat}.modis.mxd021km"/>
+    </Dsm_command>
+    <Ncs_set name="drl.{sat}.modis.mxd021km" value="{dataDirectory}{productDirectory}{/}M{satletter}D021KM.{starttime}.hdf"/>
+    <Ncs_set name="allOutputs" value="{allOutputs} {drl.{sat}.modis.mxd021km}"/>
+    <Ncs_log text="storing drl.{sat}.modis.mxd021km at {drl.{sat}.modis.mxd021km}"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="getProductDirectory" result="productDirectory">
+      <String value="drl.{sat}.modis.mxd02hkm"/>
+    </Dsm_command>
+    <Ncs_set name="drl.{sat}.modis.mxd02hkm" value="{dataDirectory}{productDirectory}{/}M{satletter}D02HKM.{starttime}.hdf"/>
+    <Ncs_set name="allOutputs" value="{allOutputs} {drl.{sat}.modis.mxd02hkm}"/>
+    <Ncs_log text="storing drl.{sat}.modis.mxd02hkm at {drl.{sat}.modis.mxd02hkm}"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="getProductDirectory" result="productDirectory">
+      <String value="drl.{sat}.modis.mxd02qkm"/>
+    </Dsm_command>
+    <Ncs_set name="drl.{sat}.modis.mxd02qkm" value="{dataDirectory}{productDirectory}{/}M{satletter}D02QKM.{starttime}.hdf"/>
+    <Ncs_set name="allOutputs" value="{allOutputs} {drl.{sat}.modis.mxd02qkm}"/>
+    <Ncs_log text="storing drl.{sat}.modis.mxd02qkm at {drl.{sat}.modis.mxd02qkm}"/>
+    <Ncs_log text="allOutputs are: {allOutputs}"/>
+    <Ncs_set name="modis.mxd01" value="{drl.{sat}.modis.mxd01}"/>
+    <Ncs_set name="modis.mxd03" value="{drl.{sat}.modis.mxd03}"/>
+    <Ncs_set name="modis.mxd021km" value="{drl.{sat}.modis.mxd021km}"/>
+    <Ncs_set name="modis.mxd02hkm" value="{drl.{sat}.modis.mxd02hkm}"/>
+    <Ncs_set name="modis.mxd02qkm" value="{drl.{sat}.modis.mxd02qkm}"/>
+    <!-- run the algorithm (to massive applause)  -->
+    <Ncs_log text="launching algorithm Mod L1B"/>
+    <RunAlgorithm algorithm="cfg_algo.OBJ" debug="{cfg_debug}"/>
+    <!-- and clean everything up - walk the outputs
+			creating new Products, decorating them with Resources,
+			and Ancillaries, and Storing them  -->
+    <Ncs_copy copy="drl.{sat}.modis.mxd021km" source="modis.mxd021km"/>
+    <Ncs_copy copy="drl.{sat}.modis.mxd02hkm" source="modis.mxd02hkm"/>
+    <Ncs_copy copy="drl.{sat}.modis.mxd02qkm" source="modis.mxd02qkm"/>
+    <Ncs_log runFlag="true" text="Creating new product drl.{sat}.modis.mxd021km"/>
+    <Dsm_command class="Product" debug="{cfg_debug}" method="new"
+      result="drl.{sat}.modis.mxd021km.OBJ" runFlag="true">
+      <Object value="drl.{sat}.modis.mxd01.OBJ"/>
+      <String value="drl.{sat}.modis.mxd021km"/>
+    </Dsm_command>
+    <Dsm_command class="drl.{sat}.modis.mxd021km.OBJ"
+      debug="{cfg_debug}" method="setAlgorithm" runFlag="true">
+      <String value="Mod L1B"/>
+      <String value="{version}"/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Adding file {drl.{sat}.modis.mxd021km} (as DATA resource)"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="addDataResource" runFlag="true">
+      <Object value="drl.{sat}.modis.mxd021km.OBJ"/>
+      <String value="{drl.{sat}.modis.mxd021km}"/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Adding ancillary drl.{sat}_modis_reflective_luts (file {modis_reflective_luts})"/>
+    <Dsm_command class="drl.{sat}.modis.mxd021km.OBJ"
+      debug="{cfg_debug}" method="addContributingResource" runFlag="true">
+      <String value="{modis_reflective_luts}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Adding ancillary drl.{sat}_modis_emissive_luts (file {modis_emissive_luts})"/>
+    <Dsm_command class="drl.{sat}.modis.mxd021km.OBJ"
+      debug="{cfg_debug}" method="addContributingResource" runFlag="true">
+      <String value="{modis_emissive_luts}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Adding ancillary drl.{sat}_modis_qa_luts (file {modis_qa_luts})"/>
+    <Dsm_command class="drl.{sat}.modis.mxd021km.OBJ"
+      debug="{cfg_debug}" method="addContributingResource" runFlag="true">
+      <String value="{modis_qa_luts}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Adding contributing product drl.{sat}.modis.mxd03 (file {drl.{sat}.modis.mxd03})"/>
+    <Dsm_command class="drl.{sat}.modis.mxd021km.OBJ"
+      debug="{cfg_debug}" method="addContributingProduct" runFlag="true">
+      <Object value="drl.{sat}.modis.mxd03.OBJ"/>
+    </Dsm_command>
+    <Ncs_log runFlag="true" text="Storing product drl.{sat}.modis.mxd021km"/>
+    <!-- register crefl with DSM  -->
+    <Dsm_command class="DSM" debug="{cfg_debug}" method="storeProduct" runFlag="true">
+      <Object value="drl.{sat}.modis.mxd021km.OBJ"/>
+    </Dsm_command>
+    <Ncs_boundp name="drl.{sat}.modis.mxd02hkm" value="drl.{sat}.modis.mxd02hkm.boundp"/>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02hkm.boundp}" text="Creating new product drl.{sat}.modis.mxd02hkm"/>
+    <Dsm_command class="Product" debug="{cfg_debug}" method="new"
+      result="drl.{sat}.modis.mxd02hkm.OBJ" runFlag="{drl.{sat}.modis.mxd02hkm.boundp}">
+      <Object value="drl.{sat}.modis.mxd01.OBJ"/>
+      <String value="drl.{sat}.modis.mxd02hkm"/>
+    </Dsm_command>
+    <Dsm_command class="drl.{sat}.modis.mxd02hkm.OBJ"
+      debug="{cfg_debug}" method="setAlgorithm" runFlag="{drl.{sat}.modis.mxd02hkm.boundp}">
+      <String value="Mod L1B"/>
+      <String value="{version}"/>
+    </Dsm_command>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02hkm.boundp}" text="Adding file {drl.{sat}.modis.mxd02hkm} (as DATA resource)"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="addDataResource" runFlag="{drl.{sat}.modis.mxd02hkm.boundp}">
+      <Object value="drl.{sat}.modis.mxd02hkm.OBJ"/>
+      <String value="{drl.{sat}.modis.mxd02hkm}"/>
+    </Dsm_command>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02hkm.boundp}" text="Adding ancillary drl.{sat}_modis_reflective_luts (file {modis_reflective_luts})"/>
+    <Dsm_command class="drl.{sat}.modis.mxd02hkm.OBJ"
+      debug="{cfg_debug}" method="addContributingResource" runFlag="{drl.{sat}.modis.mxd02hkm.boundp}">
+      <String value="{modis_reflective_luts}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02hkm.boundp}" text="Adding ancillary drl.{sat}_modis_emissive_luts (file {modis_emissive_luts})"/>
+    <Dsm_command class="drl.{sat}.modis.mxd02hkm.OBJ"
+      debug="{cfg_debug}" method="addContributingResource" runFlag="{drl.{sat}.modis.mxd02hkm.boundp}">
+      <String value="{modis_emissive_luts}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02hkm.boundp}" text="Adding ancillary drl.{sat}_modis_qa_luts (file {modis_qa_luts})"/>
+    <Dsm_command class="drl.{sat}.modis.mxd02hkm.OBJ"
+      debug="{cfg_debug}" method="addContributingResource" runFlag="{drl.{sat}.modis.mxd02hkm.boundp}">
+      <String value="{modis_qa_luts}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02hkm.boundp}" text="Adding contributing product drl.{sat}.modis.mxd03 (file {drl.{sat}.modis.mxd03})"/>
+    <Dsm_command class="drl.{sat}.modis.mxd02hkm.OBJ"
+      debug="{cfg_debug}" method="addContributingProduct" runFlag="{drl.{sat}.modis.mxd02hkm.boundp}">
+      <Object value="drl.{sat}.modis.mxd03.OBJ"/>
+    </Dsm_command>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02hkm.boundp}" text="Storing product drl.{sat}.modis.mxd02hkm"/>
+    <!-- register crefl with DSM  -->
+    <Dsm_command class="DSM" debug="{cfg_debug}" method="storeProduct" runFlag="{drl.{sat}.modis.mxd02hkm.boundp}">
+      <Object value="drl.{sat}.modis.mxd02hkm.OBJ"/>
+    </Dsm_command>
+    <Ncs_boundp name="drl.{sat}.modis.mxd02qkm" value="drl.{sat}.modis.mxd02qkm.boundp"/>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02qkm.boundp}" text="Creating new product drl.{sat}.modis.mxd02qkm"/>
+    <Dsm_command class="Product" debug="{cfg_debug}" method="new"
+      result="drl.{sat}.modis.mxd02qkm.OBJ" runFlag="{drl.{sat}.modis.mxd02qkm.boundp}">
+      <Object value="drl.{sat}.modis.mxd01.OBJ"/>
+      <String value="drl.{sat}.modis.mxd02qkm"/>
+    </Dsm_command>
+    <Dsm_command class="drl.{sat}.modis.mxd02qkm.OBJ"
+      debug="{cfg_debug}" method="setAlgorithm" runFlag="{drl.{sat}.modis.mxd02qkm.boundp}">
+      <String value="Mod L1B"/>
+      <String value="{version}"/>
+    </Dsm_command>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02qkm.boundp}" text="Adding file {drl.{sat}.modis.mxd02qkm} (as DATA resource)"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}"
+      method="addDataResource" runFlag="{drl.{sat}.modis.mxd02qkm.boundp}">
+      <Object value="drl.{sat}.modis.mxd02qkm.OBJ"/>
+      <String value="{drl.{sat}.modis.mxd02qkm}"/>
+    </Dsm_command>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02qkm.boundp}" text="Adding ancillary drl.{sat}_modis_reflective_luts (file {modis_reflective_luts})"/>
+    <Dsm_command class="drl.{sat}.modis.mxd02qkm.OBJ"
+      debug="{cfg_debug}" method="addContributingResource" runFlag="{drl.{sat}.modis.mxd02qkm.boundp}">
+      <String value="{modis_reflective_luts}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02qkm.boundp}" text="Adding ancillary drl.{sat}_modis_emissive_luts (file {modis_emissive_luts})"/>
+    <Dsm_command class="drl.{sat}.modis.mxd02qkm.OBJ"
+      debug="{cfg_debug}" method="addContributingResource" runFlag="{drl.{sat}.modis.mxd02qkm.boundp}">
+      <String value="{modis_emissive_luts}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02qkm.boundp}" text="Adding ancillary drl.{sat}_modis_qa_luts (file {modis_qa_luts})"/>
+    <Dsm_command class="drl.{sat}.modis.mxd02qkm.OBJ"
+      debug="{cfg_debug}" method="addContributingResource" runFlag="{drl.{sat}.modis.mxd02qkm.boundp}">
+      <String value="{modis_qa_luts}"/>
+      <String value=" "/>
+    </Dsm_command>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02qkm.boundp}" text="Adding contributing product drl.{sat}.modis.mxd03 (file {drl.{sat}.modis.mxd03})"/>
+    <Dsm_command class="drl.{sat}.modis.mxd02qkm.OBJ"
+      debug="{cfg_debug}" method="addContributingProduct" runFlag="{drl.{sat}.modis.mxd02qkm.boundp}">
+      <Object value="drl.{sat}.modis.mxd03.OBJ"/>
+    </Dsm_command>
+    <Ncs_log runFlag="{drl.{sat}.modis.mxd02qkm.boundp}" text="Storing product drl.{sat}.modis.mxd02qkm"/>
+    <!-- register crefl with DSM  -->
+    <Dsm_command class="DSM" debug="{cfg_debug}" method="storeProduct" runFlag="{drl.{sat}.modis.mxd02qkm.boundp}">
+      <Object value="drl.{sat}.modis.mxd02qkm.OBJ"/>
+    </Dsm_command>
+    <!-- release reserved product to DSM  -->
+    <Ncs_log text="Releasing reserved product drl.{sat}.modis.mxd01"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}" method="releaseProduct">
+      <Object value="drl.{sat}.modis.mxd01.OBJ"/>
+    </Dsm_command>
+    <Ncs_log text="Done with algorithm Mod L1B"/>
+  </EXECUTE>
+</CONFIGURE>

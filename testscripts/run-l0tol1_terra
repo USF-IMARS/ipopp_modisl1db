@@ -1,0 +1,21 @@
+#!/bin/bash
+WRAPPERHOME=../wrapper/l0tol1
+INPUTHOME=../testdata/input
+OUTPUTHOME=../testdata/output
+
+PDSFILE=$INPUTHOME/P0420064AAAAAAAAAAAAAA12249171145001.PDS
+MOD01=$OUTPUTHOME/L1ATerra.hdf
+MODGEO=$OUTPUTHOME/GEOTerra.hdf
+SAT=TERRA
+
+$WRAPPERHOME/run \
+    modis.pds $PDSFILE \
+    modis.mxd01 $MOD01 \
+    modis.mxd03 $MODGEO \
+    sat $SAT \
+    leapsec $INPUTHOME/leapsec.dat \
+    utcpole $INPUTHOME/utcpole.dat \
+    geocheck_threshold 50
+
+
+

@@ -1,0 +1,25 @@
+#!/bin/bash
+WRAPPERHOME=../wrapper/l0tol1
+INPUTHOME=../testdata/input
+OUTPUTHOME=../testdata/output
+
+PDSFILE=$INPUTHOME/P1540064AAAAAAAAAAAAAA12255195533001.PDS
+MOD01=$OUTPUTHOME/L1AAqua.hdf
+MODGEO=$OUTPUTHOME/GEOAqua.hdf
+ATTFILE1=$INPUTHOME/P1540957AAAAAAAAAAAAAA12255195533001.att
+EPHFILE1=$INPUTHOME/P1540957AAAAAAAAAAAAAA12255195533001.eph
+SAT=AQUA
+
+$WRAPPERHOME/run \
+    modis.pds $PDSFILE \
+    modis.mxd01 $MOD01 \
+    modis.mxd03 $MODGEO \
+    sat $SAT \
+    gbad_att $ATTFILE1 \
+    gbad_eph $EPHFILE1 \
+    leapsec $INPUTHOME/leapsec.dat \
+    utcpole $INPUTHOME/utcpole.dat \
+    geocheck_threshold 50
+
+
+

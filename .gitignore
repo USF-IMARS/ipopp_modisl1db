@@ -1,0 +1,13 @@
+.REVLIST
+.idea
+*.pdf
+testdata/output*
+*_backup
+*__pycache__
+
+# large, frequently changing files not tracked by git:
+testdata
+ancillary_data.db
+algorithm/run/var
+algorithm/run/data
+wrapper/lib

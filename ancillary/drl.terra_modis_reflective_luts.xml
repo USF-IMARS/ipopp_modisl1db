@@ -1,0 +1,22 @@
+	<!-- LUTs terra_modis_reflective_luts -->
+	<RemoteSite
+		run="true"
+		test="false"
+		verbose="false"
+
+		siteTitle="LUTs terra_modis_reflective_luts"
+		localFileName="ancillary/LUTs/terra/modis/"
+
+		protocol="ftp"
+		user="anonymous"
+		password="your email address here"
+		
+		sortby="none"
+		hostName="is.sci.gsfc.nasa.gov"
+		remoteFileName="MOD02_Reflective_LUTs.V[0-9]+.[0-9]+.[0-9]+.[0-9]+[a-z]?.hdf"
+		remoteDirectory="ancillary/LUTs/terra/modis"
+		dsmName="drl.terra_modis_reflective_luts"
+		spacecraft="terra"
+		>
+		<Schedule minutes="00" hours="0,8,16"/>
+	</RemoteSite>

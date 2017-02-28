@@ -1,0 +1,24 @@
+------------------------------------------------------------------------------------------
+2009-09-10 version 1.0
+* Initial checkin.
+------------------------------------------------------------------------------------------
+2010-03-17 version MODISL1DB_1.6_SPA_1.0:
+-----------------------------------------
+Notable changes in this release are:
+    * Updated to the Collection 6 l1bgen_modisa and l1bgen_modist programs:
+      	http://www.mcst.ssai.biz/mcstweb/L1B/Collection_6_Info.html
+    * MODIS scripts can now be executed concurrently in the same directory allowing 
+      for processing multiple files at once in one directory.
+    * Added the l1asubset_modis binary that strips non-ocean bands out of Level-1A 
+      files for oceans processing. This greatly reduces filesize and speeds up processing.
+------------------------------------------------------------------------------------------
+2012-08-07 version MODISL1DB_1.8_SPA_1.1:
+-----------------------------------------
+Notable changes in this release are:
+    * The L1B processing for MODIS Aqua and Terra were updated.
+    * CSH scripts were replaced with Python scripts 
+    * The LUT format is incompatible with previous versions of the code.  The old LUTs have
+	'_0C3a' appended to the end.
+    * Python version 2.6 or above in the 2.x series is require for data processing
+	(2.7 is preferred) - if you need to upgrade, see: http: //www.python.org/download/releases
+------------------------------------------------------------------------------------------

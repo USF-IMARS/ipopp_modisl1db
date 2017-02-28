@@ -1,0 +1,590 @@
+===============
+Version History
+===============
+http://oceancolor.gsfc.nasa.gov/seadas/modisl1db/
+
+========================================================================
+========================================================================
+
+MODISL1DB 1.7 released December 3, 2010
+
+Notable changes in this release are:
+
+-Updated the l1agen and geogen programs
+-Added 64bit Linux support
+-modified processing scripts:
+    modis_L0_to_L1A_GEO.csh -> modis_L1A.csh (GEO creation removed)
+    modis_L1A_to_GEO.csh -> modis_GEO.csh 
+    modis_L1A_to_L1B.csh -> modis_L1B.csh 
+========================================================================
+========================================================================
+
+MODISL1DB 1.6 released December 10, 2009
+
+Notable changes in this release are:
+
+-Updated to Collection 6 l1bgen_modisa and l1bgen_modist programs:
+
+  http://www.mcst.ssai.biz/mcstweb/L1B/Collection_6_Info.html
+
+-There is now only one Linux distribution of MODISL1DB. This release has
+ been tested on various versions of CentOS, Fedora, and Ubuntu using both
+ Intel and AMD processors, and will likely run on most other Linuxes.
+ If you encounter problems please let us know.
+
+-Added support for Intel Mac OS X 10.6.
+-Dropped support for Intel and PowerPC Mac OS X 10.4.
+-Dropped support for Solaris 8 (SunOS 5.8)
+
+-MODIS scripts can now be executed concurrently in the same directory
+ allowing for processing multiple files at once in one directory.
+
+-Added the l1asubset_modis binary that strips non-ocean bands out of
+ Level-1A files for oceans processing. This greatly reduces filesize and
+ speeds up processing.
+
+NOTE: If you have already installed a previous version of MODISL1DB,
+simply install MODISL1DB 1.6 in a new directory and point your DBHOME
+environment variable to this new directory. If you already have the
+digital elevation maps, there is no need to re-download them. You can
+simply move them into the $DBHOME/data/modis/static/ directory or create
+a symbolic link that points to them.
+
+**************
+Currently supported platforms:
+
+ -Linux
+ -Intel Macintosh OS X 10.5/10.6
+ -PowerPC Macintosh OS X 10.5
+
+**************
+AFFECTED FILES:
+
+bin/l1asubset_modis - new binary strips out non-ocean bands
+bin/l1bgen_modisa - upgraded from v5.0.7 to v6.1.3b
+bin/l1bgen_modist - upgraded from v5.0.6b to v6.1.2b
+bin/modis_timestamp - fixed bug that caused seg faults and mangled strings
+scripts/modis_L0_to_L1A_GEO.csh - fixed bug that could drop 10 scanlines if
+    both next gran was specified and l0fix was triggered (thanks to Jeffrey
+    E. Schmaltz of the MODIS Rapid Response Team)
+scripts/modis_definitive_atteph.csh - fixed octal bug, ftp timeout now 60
+scripts/modis_predicted_atteph.csh - fixed octal bug, ftp timeout now 60
+scripts/modis_update_luts.csh - ftp timeout now 60
+scripts/modis_update_utcpole_leapsec.csh - ftp timeout now 60
+
+New Aqua LUTs included:
+data/modisa/cal/MYD02_Emissive_LUTs.V6.1.5.0g.hdf
+data/modisa/cal/MYD02_QA_LUTs.V6.1.5.0g.hdf
+data/modisa/cal/MYD02_Reflective_LUTs.V6.1.5.0g.hdf
+
+New Terra LUTs included:
+data/modist/cal/MYD02_Emissive_LUTs.V6.1.2.1.hdf
+data/modist/cal/MYD02_QA_LUTs.V6.1.2.1.hdf
+data/modist/cal/MYD02_Reflective_LUTs.V6.1.2.1.hdf
+
+
+
+========================================================================
+========================================================================
+
+MODISL1DB 1.5 released March 31, 2008
+
+*IMPORTANT*: This release contains no processing code changes, but
+many of the Unix binaries have been renamed for standardization
+purposes (and to stay in sync with SeaDAS). This will NOT affect most
+users, since the wrapper processing scripts have not been renamed and
+these scripts are all that is needed to carry out the processing. See
+below for more details.
+
+**************
+Currently supported platforms:
+
+ - Ubuntu Linux 7.10 (kernel 2.6.22)
+ - RedHat Linux Fedora Core 6 (kernel 2.6.20)
+ - RedHat Linux Fedora Core 4 (kernel 2.6.11)
+ - CentOS Linux 4.4 (kernel 2.6.9)
+ - Intel Macintosh OS X 10.4/10.5
+ - PowerPC Macintosh OS X 10.4/10.5
+ - Solaris 8 (SunOS 5.8) on a Sun Blade 100 Workstation (64-bit binaries only)
+
+
+Changes:
+
+**************
+-All processing binaries are now statically linked for the Linux
+ distributions. This may allow users to run MODISL1DB on a wider
+ variety of unsupported Linux systems.
+
+**************
+-Added support for Ubuntu 7.10 Linux
+-Added support for Intel Mac OS X 10.5 (OS X 10.4 is still supported)
+-Added support for PowerPC Mac OS X 10.5 and 10.4
+-Dropped support for PowerPC Mac OS X 10.3
+-Dropped support for RedHat Linux Fedora Core 2
+-Dropped support for RedHat Linux 7.3
+
+**************
+-New directory location for attitude and ephemeris files. These files
+ are now stored and accessed in $DBHOME/var/modis/atteph/ (instead of
+ in $DBHOME/data/modis/atteph/).
+
+**************
+-Many Unix binaries have been renamed. This will NOT affect most users,
+ since the wrapper processing scripts have not been renamed and these
+ scripts are all that is needed to carry out the processing. However,
+ if you happen to make direct use of any of the binaries contained in
+ the MODISL1DB bin directory, please check the following table to see
+ if the changes affect you:
+
+  Old Unix Binary Name      New Unix Binary Name
+  --------------------      --------------------
+  aqua_l1bgen               l1bgen_modisa
+  fix_L0                    l0fix_modis
+  geolocate                 geogen_modis
+  MODl1extract              l1aextract_modis
+  MODll2snpx                lonlat2pixline (this is a new binary)
+  modis_l1agen              l1agen_modis
+  terra_l1bgen              l1bgen_modist
+  write_5min_gran           l0chunk_modis
+  write_constructor_file    l0cnst_write_modis
+
+
+AFFECTED FILES:
+
+bin/l1bgen_modisa
+bin/l0fix_modis
+bin/geogen_modis
+bin/l1aextract_modis
+bin/lonlat2pixline
+bin/l1agen_modis
+bin/l1bgen_modist
+bin/l0chunk_modis
+bin/l0cnst_write_modis
+
+New Aqua LUTs included:
+data/modisa/cal/MYD02_Emissive_LUTs.V5.0.35.1a.hdf
+data/modisa/cal/MYD02_QA_LUTs.V5.0.35.1a.hdf
+data/modisa/cal/MYD02_Reflective_LUTs.V5.0.35.1a.hdf
+
+New Terra LUTs included:
+data/modist/cal/MOD02_Emissive_LUTs.V5.0.40.3a.hdf
+data/modist/cal/MOD02_QA_LUTs.V5.0.40.3a.hdf
+data/modist/cal/MOD02_Reflective_LUTs.V5.0.40.3a.hdf
+
+
+========================================================================
+========================================================================
+
+MODISL1DB 1.4.1 released September 25, 2007
+
+The only change for version 1.4.1 is an updated terra_l1bgen binary.
+This update fixes a problem in the MOD_PRO2 (terra_l1bgen) processing
+code that was causing MODIS-Terra L1A to L1B processing to fail
+depending on which calibration LUT versions were being used. The issue
+was determined (by MODAPS and the OBPG) to involve the RVS correction
+limits set in the PreprocessP.h file. The threshold values have been
+relaxed in the PreprocessP.h header file from:
+
+#define RVS_CORRECTION_UPPER_LIMIT  1.2e+0
+#define RVS_CORRECTION_LOWER_LIMIT  8.0e-1
+
+to:
+
+#define RVS_CORRECTION_UPPER_LIMIT  2.4e+0
+#define RVS_CORRECTION_LOWER_LIMIT  4.0e-1
+
+This change appears to fix the problem. The new terra_l1bgen binary
+should now work with any past and future calibration LUTs.
+
+
+AFFECTED FILES:
+
+bin/terra_l1bgen
+
+
+========================================================================
+========================================================================
+
+MODISL1DB 1.4 released July 23, 2007
+
+**************
+Level 0 to Level 1A processing changes:
+
+-new modis_l1agen binary (MOD_PR01 V5.0.3): code updated to be in  sync
+ with the MODIS Science Data Support Team
+
+-updated Aqua/Terra geolocation maneuver, geolocation parameter, and
+ ENG_DATA_LIST files to V5.0.27
+
+-fix_L0 binary: fixed a small counting error
+
+-date2jd binary: fixed bug on certain linux systems that would result
+ in the error "set: Variable name must begin with a letter"
+
+-updated modis_L0_to_L1A_GEO.csh script:
+
+  -added the "-n next_granule_filename" option for specifying the next
+   concurrent L0 granule. This enables geolocation of the last scanline
+   of the input L0 file. Setting this option forces the stopnudge
+   parameter to be set to 0.
+
+  -added the "-b" option to activate use  of the base of the input
+   filename up to first "." for output filenames. This is so filename
+   bases can now be kept identical through the processing chain instead
+   of the seconds potentially changing...
+   e.g.: A2007111165000.L1A_LAC -> A2007111165001.GEO
+
+  -fixed some "rm" statements to use "rm -f" for users who's environment
+   has a "rm -i" alias set.
+
+
+**************
+Geolocation processing:
+
+-new geolocate binary (MOD_PR03 V5.0.6): code updated to be in  sync
+ with the MODIS Science Data Support Team
+
+-updated Aqua/Terra geolocation maneuver, geolocation parameter, and
+ ENG_DATA_LIST files to V5.0.27
+
+-Extraction metadata from the L1A file (if present) is now copied to the
+ geolocation file, e.g.:
+       Extract_Pixel_Offset = 396
+       Extract_Pixel_Count = 226
+       Extract_Line_Offset = 258
+       Extract_Line_Count = 36
+
+ This can be accessed by the user and is also detected by the SeaDAS
+ msl12 and msscanpixlimits binaries.
+
+-updated modis_L1A_to_GEO.csh script:
+
+  -added the "-b" option to activate use  of the base of the input
+   filename up to first "." for output filenames. This is so filename
+   bases can now be kept identical through the processing chain instead
+   of the seconds potentially changing...
+   e.g.: A2007111165000.L1A_LAC -> A2007111165001.GEO
+
+-updated modis_definitive_atteph.csh script:
+
+  -the definitive attitude files have been changed from AM1ATTNF.A* to
+   AM1ATTN0.A*. This is spacecraft attitude that has been refined by the
+   Level 0 processing facility. AM1ATTNF.A* files are the FDD (Flight
+   Dynamics Division) predicted data from flight dynamics. According to
+   MODAPS, they are used only for spacecraft-manuever periods, where
+   typically the ATTN0 files will be absent or not work.
+
+
+**************
+Level 1A to Level 1B processing:
+
+-modis_L1A_to_L1B.csh:
+
+  -added the "-b" option to activate use  of the base of the input
+   filename up to first "." for output filenames. This is so filename
+   bases can now be kept identical through the processing chain instead
+   of the seconds potentially changing...
+   e.g.: A2007111165000.L1A_LAC -> A2007111165001.L1B
+
+
+**************
+-improved modisl1db_benchmarks.bash benchmark script to report both
+ CPU time and wall clock time
+
+**************
+-fixed bug in modis_update_luts.csh script so it no longer fails when
+ no calibration LUTs whatsoever exist on a user's hard disk
+
+
+AFFECTED FILES:
+
+bin/date2jd
+bin/fix_L0
+bin/geolocate
+bin/modis_l1agen
+scripts/modis_L0_to_L1A_GEO.csh
+scripts/modis_L1A_to_GEO.csh
+scripts/modis_L1A_to_L1B.csh
+scripts/modis_definitive_atteph.csh
+scripts/modis_update_luts.csh
+scripts/modisl1db_benchmarks.bash
+scripts/modisl1db_env.bash
+scripts/modisl1db_env.csh
+
+New Aqua data files included:
+data/modisa/cal/ENG_DATA_LIST_AQUA_V5.0.27
+data/modisa/cal/MYD03LUT.coeff_V5.0.27
+data/modisa/cal/maneuver_aqua.coeff_V5.0.27
+
+New Terra data files included:
+data/modist/cal/ENG_DATA_LIST_TERRA_V5.0.27
+data/modist/cal/MOD03LUT.coeff_V5.0.27
+data/modist/cal/maneuver_terra.coeff_V5.0.27
+
+New Aqua LUTs included:
+data/modisa/cal/MYD02_Emissive_LUTs.V5.0.7.22a.hdf
+data/modisa/cal/MYD02_QA_LUTs.V5.0.7.22a.hdf
+data/modisa/cal/MYD02_Reflective_LUTs.V5.0.7.22a.hdf
+
+New Terra LUTs included:
+data/modist/cal/MOD02_Emissive_LUTs.V5.0.6.32a.hdf
+data/modist/cal/MOD02_QA_LUTs.V5.0.6.32a.hdf
+data/modist/cal/MOD02_Reflective_LUTs.V5.0.6.32a.hdf
+
+
+========================================================================
+========================================================================
+
+MODISL1DB 1.3 released for Intel-based Macs, February 6, 2007
+
+Added new support for the Intel-based Mac OS X platform.
+
+
+========================================================================
+========================================================================
+
+MODISL1DB 1.3 released August 1, 2006
+
+Changes:
+
+**************
+-Minor bug fixes to most of the processing scripts.
+
+**************
+-Added use of the curl ftp client (if curl is detected on the host) to
+ the geolocation processing scripts to allow for listing multiple
+ directories with one connection. Also tweaked ftp parameters for all
+ scripts that use ftp. These changes may help to prevent reaching the
+ OBPG firewall connection limits.
+
+**************
+-Fixed a bug with the write_constructor_file binary that was causing it
+ to hang when the L0 file had an incomplete scan line.
+
+**************
+-Added the write_5min_gran binary. This utility will split Level 0
+ granules into separate chunks of length specified by the user.
+ Executing the command on the UNIX command line prints usage statement:
+
+  USAGE: write_5min_gran MODIS_L0_PDS_file [granule_length] [zulu_start_time]
+
+  granule_length: Time in seconds of each generated granule. (default = 300 sec)
+
+  zulu_start_time: Time of the first packet included in the granule(s). All packets
+                   before this time will be ignored. All packets after this time
+                   will be included in the output L0 granule(s). If zulu_start_time
+                   is not set, the first output granule's filename will be set to the
+                   rounded 5 minute interval preceding the time of the first packet.
+                   zulu_start_time example: 2006-06-12T16:50:00.00000
+                   (default = start time of first packet in L0 granule)
+
+
+...So the command can be run with:
+
+ -only the MODIS_L0_PDS_file argument
+ -with the MODIS_L0_PDS_file and granule_length arguments
+ -with all three args in the order specified
+
+The output filename format for each of the chunked granules is
+ifile_YYYYDDDHHMM. For example if your input file is "t1.04146.1453.pds",
+and you run write_5min_gran without specifying granule_length or
+zulu_start_time, then the output filenames will be:
+
+  t1.04146.1453.pds_20041461450
+  t1.04146.1453.pds_20041461455
+
+**************
+-Added the fix_L0 binary. This utility will create a new L0 file with L0
+ packets of the wrong length removed. Executing the command on the UNIX
+ command line prints usage statement:
+
+  USAGE:    fix_L0 MODIS_L0_PDS_file -1 -1
+         OR
+            fix_L0 MODIS_L0_PDS_file taitime_start taitime_stop output_L0_file
+
+  NOTE: Using the '-1 -1' arguments will write information to stdout, including
+        valid taitime_start and taitime_stop times for re-input into fix_L0.
+
+
+**************
+-Added the fix_L0 functionality directly into the Level 0 processing
+ script modis_L0_to_L1A_GEO.csh. Now if a problem is encountered with
+ the L0 file, fix_L0 will be run in an attempt to repair the file, and
+ processing will continue. This feature can be disabled by using the new
+ modis_L0_to_L1A_GEO.csh "-disable-fix_L0" option:
+
+  -disable-fix_L0 (optional)
+  Disable automatic use of the fix_L0 utility if a corrupt or wrong-sized
+  Level 0 packet is detected by the write_constructor_file binary, while
+  attempting to generate the constructor file. If this option is used and
+  such an error is detected, processing will stop. Otherwise, an attempt
+  will be made to create a new Level 0 file with the problem packet(s)
+  removed, and if successful processing will proceed.
+
+**************
+-Improved MODl1extract to handle high res. (HKM and QKM) file extraction.
+
+**************
+-To fix a security hazard, the attitude/ephemeris retrieval mechanism
+ has been changed and the processing scripts no longer create world
+ writeable directories under $DBHOME/data/modis/atteph/. This change
+ does NOT affect users who have write permission for the
+ $DBHOME/data/modis/atteph/ directory. Users without write permissions
+ under $DBHOME/data/modis/atteph/ must now set up their own directory
+ and define the MODIS_ATTEPH variable. In this case, the processing
+ scripts will check both the user-defined directory as well as
+ $DBHOME/data/modis/atteph/ for required atteph files.
+
+**************
+-Added the modisl1db_benchmarks.bash script which will process a user-
+ specified Level 0 PDS file to L1A/GEO and then to L1B, calculating the
+ time required for the processing. A benchmark table will eventually be
+ hosted on the MODISL1DB website listing benchmarks from various
+ platforms for processing the OBPG demo Aqua L0 file,
+ MOD00.P2006214.0540_1.PDS. If you perform any benchmarks on this file,
+ please email the results to seadas@seadas.gsfc.nasa.gov.
+
+
+AFFECTED FILES:
+
+bin/fix_L0
+bin/MODl1extract
+bin/write_5min_gran
+bin/write_constructor_file
+scripts/modis_L0_to_L1A_GEO.csh
+scripts/modis_L1A_to_GEO.csh
+scripts/modis_L1A_to_L1B.csh
+scripts/modis_definitive_atteph.csh
+scripts/modis_predicted_atteph.csh
+scripts/modis_update_luts.csh
+scripts/modis_update_utcpole_leapsec.csh
+scripts/modisl1db_benchmarks.bash
+scripts/modisl1db_env.bash
+scripts/modisl1db_env.csh
+
+New Aqua LUTs included:
+data/modisa/cal/MYD02_Emissive_LUTs.V5.0.7.13a.hdf
+data/modisa/cal/MYD02_QA_LUTs.V5.0.7.13a.hdf
+data/modisa/cal/MYD02_Reflective_LUTs.V5.0.7.13a.hdf
+
+New Terra LUTs included:
+data/modist/cal/MOD02_Emissive_LUTs.V5.0.6.18.hdf
+data/modist/cal/MOD02_QA_LUTs.V5.0.6.18.hdf
+data/modist/cal/MOD02_Reflective_LUTs.V5.0.6.18.hdf
+
+
+========================================================================
+========================================================================
+
+MODISL1DB 1.2 released December 13, 2005
+
+The major change in this update is the addition of a new MODIS L1A
+extraction script.  Given two latitude/longitude corners of a geographic
+box, the new modis_L1A_extract.csh script will extract data within the
+box, creating a subscened L1A file and an optional corresponding GEO
+file. The new L1A/GEO subscene can then be processed to an L1B file in
+the usual way. Unlike the L1A file, the resulting subscened L1B file
+will be padded to contain the full original swath width, with pixels
+falling outside the extraction box being set to arbitrary meaningless
+values depending on the band.
+
+The new L1A and L1B files will contain in their HDF headers the
+following non-standard fields:
+
+   Extract Pixel Offset
+   Extract Pixel Count
+   Extract Line Offset
+   Extract Line Count
+
+L1B subscene files can then be processed to Level 2 Ocean data using the
+SeaDAS msl12 program. msl12 will detect the original subscene box and
+only process data contained within this box. If your Level 2 processor
+is not msl12, it may be able to process the L1B padded subscence as is,
+or may require modification. (Also note that the SeaDAS software package
+is capable of displaying and navigating L1A, L1B, L2, and L3 subscenes.)
+
+
+AFFECTED FILES:
+
+bin/aqua_l1bgen, bin/terra_l1bgen:
+  -fixed bug in the LOCALGRANULEID field so now only the filename and
+   not the path is written
+
+bin/MODl1extract:
+  -new binary utility, called by the new L1A extractor script to perform
+   the actual extraction
+
+bin/MODll2snpx:
+  -new binary utility, called by the new L1A extractor script to convert
+   lat/lons to scan/pixel numbers
+
+doc/README.modis_L1A_extract:
+  -readme document for the new L1A extractor script
+
+scripts/modis_L0_to_L1A_GEO.csh, scripts/modis_L1A_to_GEO.csh:
+  -fixed bug for certain platforms that can't handle long command lines
+  -fixed bug where in some situations the *.met files were not being
+   removed after processing
+
+scripts/modis_L1A_extract.csh:
+  -new MODIS L1A subscene extraction script. The script is a wrapper for
+   the new MODll2snpx and MODl1extract binaries. Given lat/lon corners
+   of a geographic box, the script will extract data within the box and
+   optionally create a new corresponding GEO file.
+
+scripts/modis_L1A_to_L1B.csh:
+  -added command line option to keep/delete the 1km/hkm/qkm L1B files
+  -fixed bug for certain platforms that can't handle long command lines
+  -fixed bug where in some situations the *.met files were not being
+   removed after processing
+
+scripts/modis_update_luts.csh:
+  -prints more information regarding current and active LUTs
+
+New Aqua LUTs included:
+data/modisa/cal/MYD02_Emissive_LUTs.V5.0.7.6d.hdf
+data/modisa/cal/MYD02_QA_LUTs.V5.0.7.6d.hdf
+data/modisa/cal/MYD02_Reflective_LUTs.V5.0.7.6d.hdf
+
+
+========================================================================
+========================================================================
+
+MODISL1DB 1.1 released November 18, 2005
+
+AFFECTED FILES:
+
+bin/aqua_l1bgen, bin/terra_l1bgen:
+  -the LOCALGRANULEID metadata field is now set to the L1B output file
+   (previously it was being set to the original DAAC output string)
+
+scripts/modis_L0_to_L1A_GEO.csh, scripts/modis_L1A_to_GEO.csh:
+  -new feature checks utcpole.dat and leapsec.dat to see if they're
+   over 14 days old, and if so, automatically downloads them unless
+   the '-disable-utcpole_leapsec' flag is set
+
+scripts/modis_update_luts.csh:
+  -improved the logic for checking users' newest local LUT versions
+
+data/modisa/pcf/PGE01_template.pcf, data/modist/pcf/PGE01_template.pcf:
+  -minor edit of EPHFILE/ATTFILE lines; this will not affect products
+   (updated modis_L0_to_L1A_GEO.csh and modis_L1A_to_GEO.csh to match)
+
+data/modisa/pcf/PGE02_template.pcf, data/modist/pcf/PGE02_template.pcf:
+  -minor edit of MCF lines; this will not affect products
+   (updated modis_L1A_to_L1B.csh to match)
+
+New Aqua and Terra LUTs included:
+data/modisa/cal/MYD02_Emissive_LUTs.V5.0.7.6a.hdf
+data/modisa/cal/MYD02_QA_LUTs.V5.0.7.6a.hdf
+data/modisa/cal/MYD02_Reflective_LUTs.V5.0.7.6a.hdf
+data/modist/cal/MOD02_Emissive_LUTs.V5.0.6.9.hdf
+data/modist/cal/MOD02_QA_LUTs.V5.0.6.9.hdf
+data/modist/cal/MOD02_Reflective_LUTs.V5.0.6.9.hdf
+
+
+========================================================================
+========================================================================
+
+MODISL1DB 1.0 released September 26, 2005
+

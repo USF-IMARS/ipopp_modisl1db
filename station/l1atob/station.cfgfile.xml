@@ -1,0 +1,48 @@
+<!-- XML document that can be expanded into a station.cfgfile
+     for most NCS stations -->
+
+<NCS_Station name="Mod L1B" verbose_logging="true">
+	<group>Mod-L1B grp1</group>
+	<algorithm>
+		<installation>{cfg_nisgs_home}{/}SPA{/}modisl1db{/}wrapper{/}l1atob{/}installation.xml</installation>
+		<!-- The version should really be in the installation file
+			 and we should pick it up from there -->
+		<version>modisl1db1.8</version>
+	</algorithm>
+	<inputs>
+		<product type="drl.{sat}.modis.mxd01" wrappertype="modis.mxd01"/>
+		<product type="drl.{sat}.modis.mxd03" wrappertype="modis.mxd03"/>
+                <ancillary select="platform" type="drl.{sat}_modis_reflective_luts"
+			wrappertype="modis.reflective.luts" />
+                <ancillary select="platform" type="drl.{sat}_modis_emissive_luts"
+			wrappertype="modis.emissive.luts"/>
+                <ancillary select="platform" type="drl.{sat}_modis_qa_luts"
+			wrappertype="modis.qa.luts" />
+	</inputs>
+	<setup>
+		<!-- Set satletter to O/terra or Y/aqua -->
+<Ncs_print text="sat is |{sat}|"/>
+		<Ncs_set name="satletter" value="O" />
+		<Ncs_test name="{sat}" pattern="^[Aa][Qq][Uu][Aa]$" result="aqua-p" />
+<Ncs_print text="aqua-p is {aqua-p}"/>
+		<Ncs_set name="satletter" value="Y" runFlag="{aqua-p}" />
+		<!-- somehow set starttime string here -->
+		<Dsm_command result="passDate" class="cfg_pass" method="getAos"/>
+		<Ncs_date name="passDate" getValue="starttime"/>
+	</setup>
+	<outputs>
+		<product type="drl.{sat}.modis.mxd021km"
+			filename="{dataDirectory}{productDirectory}{/}M{satletter}D021KM.{starttime}.hdf"
+			wrappertype="modis.mxd021km"/>
+
+		<product type="drl.{sat}.modis.mxd02hkm"
+			optional="true"
+			filename="{dataDirectory}{productDirectory}{/}M{satletter}D02HKM.{starttime}.hdf"
+			wrappertype="modis.mxd02hkm"/>
+
+		<product type="drl.{sat}.modis.mxd02qkm"
+			optional="true"
+			filename="{dataDirectory}{productDirectory}{/}M{satletter}D02QKM.{starttime}.hdf"
+			wrappertype="modis.mxd02qkm"/>
+	</outputs>
+</NCS_Station>

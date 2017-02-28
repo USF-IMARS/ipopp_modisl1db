@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<AlgorithmInstallation>
+ <Name>MODL1AtoB</Name>
+ <Variables>
+  <PATH environment="PATH"/>
+  <modis_L1_home>{cfg_installationDirectory}{/}..{/}..{/}algorithm</modis_L1_home>
+ </Variables>
+ <Description>{cfg_installationDirectory}{/}generic.xml</Description>
+ <Executables>
+   <ML1AtoBcmd>{modis_L1_home}{/}run{/}scripts{/}modis_L1B.py</ML1AtoBcmd>
+
+ </Executables>
+ <TemplateFiles>
+ </TemplateFiles>
+</AlgorithmInstallation>

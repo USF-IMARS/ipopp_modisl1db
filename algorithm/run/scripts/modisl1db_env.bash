@@ -1,0 +1,16 @@
+export DBHOME=/home/wwalsh/trunk_current-modis/algorithm
+export SEADAS=$DBHOME
+export OCSSWROOT=$DBHOME
+export LIB3_BIN=$DBHOME/run/bin
+export OCDATAROOT=$DBHOME/run/data
+export MODIS_GEO=.
+export MODIS_L1A=.
+export MODIS_L1B=.
+export MODIS_ATTEPH=$DBHOME/run/var/modis/atteph
+export AQUA_REFL_LUT=$DBHOME/run/var/modisa/cal/OPER/MYD02_Reflective_LUTs.V6.1.7.3_OCb.hdf
+export AQUA_EMIS_LUT=$DBHOME/run/var/modisa/cal/OPER/MYD02_Emissive_LUTs.V6.1.7.3_OCb.hdf
+export AQUA_QA_LUT=$DBHOME/run/var/modisa/cal/OPER/MYD02_QA_LUTs.V6.1.7.3_OCb.hdf
+export TERRA_REFL_LUT=$DBHOME/run/var/modist/cal/OPER/MOD02_Reflective_LUTs.V6.1.6.2.hdf
+export TERRA_EMIS_LUT=$DBHOME/run/var/modist/cal/OPER/MOD02_Emissive_LUTs.V6.1.6.2.hdf
+export TERRA_QA_LUT=$DBHOME/run/var/modist/cal/OPER/MOD02_QA_LUTs.V6.1.6.2.hdf
+export PATH=.:$DBHOME/run/scripts:$DBHOME/run/bin:$PATH

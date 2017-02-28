@@ -1,0 +1,22 @@
+	<!-- UTCPOLE  (every 3 days) -->
+	<RemoteSite
+		run="true"
+		test="false"
+		verbose="false"
+
+		siteTitle="UTCPole"
+		localFileName="ancillary/temporal/"
+		pollingHours="72"
+
+		protocol="ftp"
+		user="anonymous"
+		password="your email address here"
+
+		sortby="date"
+		hostName="oceandata.sci.gsfc.nasa.gov"
+		remoteFileName="^utcpole.*"
+		remoteDirectory="Ancillary/LUTs/modis"
+		dsmName="drl.utcpole"
+		>
+		<Schedule minutes="52" hours="3" daysOfWeek="Mon,Wed,Fri" startDelaySecs="120"/>
+	</RemoteSite>

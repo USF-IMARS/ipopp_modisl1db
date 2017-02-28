@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<AlgorithmInstallation>
+ <Name>MODL0toL1</Name>
+ <Variables>
+  <PATH environment="PATH"/>
+  <modis_L1_home>{cfg_installationDirectory}{/}..{/}..{/}algorithm</modis_L1_home>
+ </Variables>
+ <Description>{cfg_installationDirectory}{/}generic.xml</Description>
+ <Executables>
+   <ML1Acmd>{modis_L1_home}{/}run{/}scripts{/}modis_L1A.py</ML1Acmd>
+   <MGEOcmd>{modis_L1_home}{/}run{/}scripts{/}modis_GEO.py</MGEOcmd>
+   <Updatecmd>{modis_L1_home}{/}run{/}scripts{/}update_luts.py</Updatecmd>
+ </Executables>
+ <TemplateFiles>
+ </TemplateFiles>
+</AlgorithmInstallation>

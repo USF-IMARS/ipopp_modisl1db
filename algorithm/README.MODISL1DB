@@ -1,0 +1,159 @@
+==========================================================================
+            MODISL1DB 1.8 RELEASE NOTES (June 4, 2012)
+==========================================================================
+
+Home Page: http://oceancolor.gsfc.nasa.gov/seadas/modisl1db/
+
+MODISL1DB is a MODIS Level-1 Direct Broadcast software package capable of
+processing MODIS Aqua and Terra Level 0 data to Level 1A and Level 1B.
+This software combines the capabilities of the MCST, SeaDAS, and IMAPP
+MODIS Level-1 processing code.
+
+Notable changes in this release are:
+
+-Updated the l1bgen programs
+-modified processing scripts to use python
+These python scripts replace the CSH scripts distributed with previous
+versions.  The CSH scripts are no longer supported.
+
+==========================================================================
+
+Currently supported platforms:
+
+ -Linux
+ -Linux 64bit
+ -Intel Macintosh OS X 10.6/10.7
+
+==========================================================================
+
+********************************************************************************
+Important Note
+
+The LUT format is incompatible with previous versions of the code!  On June
+18th, 2012, the LUTs distributed by the OBPG will be switched to the new
+format.  Any automated update processes in place for previous versions should
+be disabled prior to that date.  You may implement an automated update process
+for version 6.4 at any time, however no updates to the LUTs distributed with
+the code will occur until Jun 18th, 2012.
+
+********************************************************************************
+
+New requirements:
+- python version 2.6 or above in the 2.x series is require for data
+   processing (2.7 is preferred) - if you need to upgrade, see:
+        http://www.python.org/download/releases
+
+Modified scripts:
+    - modis_L1A.csh is replaced by modis_L1A.py
+    - modis_GEO.csh is replaced by modis_GEO.py
+    - modis_L1B.csh is replaced by modis_L1B.py
+    - modis_L1A_extract.csh is replaced by modis_L1A_extract.py
+    - modis_definitive_atteph.csh and modis_predicted_atteph scripts are replaced by modis_atteph.py
+    - modis_geocheck.csh is replaced by modis_geocheck.py
+    - modis_update_luts.csh, modis_update_utcpole_leapsec.csh are replaced by update_luts.py
+
+Code eliminated (no longer used):
+    - modis_timestamp
+    - addsecs
+    - jd2date
+    - wget (third party code previously included in the distribution)
+
+********************************************************************************
+Source code is not distributed with the MODISL1DB software package.
+However, the complete source code and build environment for all MODISL1DB
+binaries is available within the SeaWiFS Data Analysis System (SeaDAS)
+software package (http://oceancolor.gsfc.nasa.gov/seadas/).
+
+To build custom MODISL1DB binaries, users can install SeaDAS and then
+rebuild any of the MODISL1DB binaries within their SeaDAS environment.
+These custom binaries can then be substituted directly into an existing
+MODISL1DB installation. Or, if the processing component of SeaDAS is
+installed (distributed in the file seadas_processing.tar.gz), the
+following SeaDAS script can be run to create a complete MODISL1DB package
+(created in $SEADAS/modisl1db/) containing the new custom binaries:
+
+$SEADAS/config/modisl1db/modisl1db_dist.csh
+
+==========================================================================
+
+Before installing the MODISL1DB package, please read (and agree to) the
+SeaDAS_Software_Distribution_Policy.txt file found in this directory.
+
+Please be aware that if the SeaDAS software package is already installed
+on your computer, you will already have full access to *ALL* of the
+functionality of MODISL1DB. If you do decide to also install MODISL1DB,
+SeaDAS and MODISL1DB should NOT both be enabled at the same time. To
+disable SeaDAS, simply comment-out any lines in your shell initialization
+file that set up the SeaDAS environment.
+
+====================
+Online Installation:
+====================
+
+MODISL1DB can be downloaded and installed using a simple online
+installation page. The online installer will do everything for you,
+including downloading files, installing the software, and setting up your
+UNIX environment for MODISL1DB. To perform an online installation go to:
+
+http://oceancolor.gsfc.nasa.gov/seadascgi/modisl1db_online_install.pl
+
+====================
+Manual Installation:
+====================
+
+NOTE: If you have already installed a previous version of MODISL1DB,
+      simply install a new version of MODISL1DB in a new directory and
+      point your DBHOME environment variable to this new directory. If
+      you already have the digital elevation maps, there is no need to
+      re-download them. You can simply move them into the
+      $DBHOME/data/modis/static/ directory or create a symbolic link that
+      points to them.
+
+To install MODISL1DB manually follow these instructions:
+
+  1. Create a MODISL1DB root directory and enter that directory:
+
+         > mkdir modisl1db (this directory can be named whatever you like)
+         > cd modisl1db
+
+  2. Using anonyomous ftp (ftp://samoa.gsfc.nasa.gov/seadas/modisl1db/),
+     download the main MODISL1DB distribution file for your platform
+     (e.g. modisl1db_linux.tar.gz), as well as the required digital
+     elevation maps (seadas_dem_modis.tar.gz) and if desired, the optional
+     Level 0 test file and benchmark script (seadas_benchmarks.tar.gz).
+
+  3. Uncompress and extract the files you have downloaded into the new
+     modisl1db directory you have created:
+
+         > gunzip -c modisl1db_xxx.tar.gz | tar xvpf -
+           (where xxx = linux, macintel, or macppc)
+         > gunzip -c seadas_dem_modis.tar.gz | tar xvpf -
+         > gunzip -c seadas_benchmarks.tar.gz | tar xvpf -
+
+  4. To conserve disk space, you may now wish to remove the *.gz files.
+
+  5. Add the following lines to a shell initialization file AND THEN
+     *SOURCE* THIS SHELL INIT FILE:
+
+     For the bash shell, put these lines in ~/.bashrc:
+     (where PATH_TO_MODISL1DB is the full directory path to MODISL1DB)
+        export DBHOME=PATH_TO_MODISL1DB
+        source $DBHOME/run/scripts/modisl1db_env.bash
+        ulimit -Ss unlimited (add this line for Mac OS X only)
+
+     For the csh or tcsh shell, put these lines in ~/.cshrc or ~/.tcshrc:
+     (where PATH_TO_MODISL1DB is the full directory path to MODISL1DB)
+        setenv DBHOME PATH_TO_MODISL1DB
+        source $DBHOME/run/scripts/modisl1db_env.csh
+        limit stacksize unlimited (add this line for Mac OS X only)
+
+  6. The MODISL1DB installation is now complete and you can execute one of
+     the 4 main wrapper scripts to process your data:
+
+        > modis_L1A.py MODIS_L0_PDS_file
+        > modis_L1A_extract.py L1A_file GEO_file -w SWlon -s SWlat -e NElon \
+           -n NElat -o Output_L1A_file [Output_GEO_file]
+        > modis_GEO.py MODIS_L1A_file
+        > modis_L1B.py MODIS_L1A_file MODIS_GEO_file
+
+==========================================================================

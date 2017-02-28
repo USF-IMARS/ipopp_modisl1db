@@ -1,0 +1,26 @@
+#!/bin/bash
+WRAPPERHOME=../wrapper/l1atob
+INPUTHOME=../testdata/input
+OUTPUTHOME=../testdata/output
+
+MOD03=$INPUTHOME/GEOAqua.hdf
+MOD01=$INPUTHOME/L1AAqua.hdf
+MOD021KM=$OUTPUTHOME/L1B1KMAqua.hdf
+MOD02HKM=$OUTPUTHOME/L1BHKMAqua.hdf
+MOD02QKM=$OUTPUTHOME/L1BQKMAqua.hdf
+REFLUT=$INPUTHOME/MYD02_Reflective_LUTs.V6.1.17.1.hdf
+EMILUT=$INPUTHOME/MYD02_Emissive_LUTs.V6.1.17.1.hdf
+QALUT=$INPUTHOME/MYD02_QA_LUTs.V6.1.17.1.hdf
+
+
+$WRAPPERHOME/run \
+    modis.mxd01 $MOD01 \
+    modis.mxd03 $MOD03 \
+    modis.mxd021km $MOD021KM \
+    modis.mxd02hkm $MOD02HKM \
+    modis.mxd02qkm $MOD02QKM \
+    modis_reflective_luts $REFLUT \
+    modis_emissive_luts $EMILUT \
+    modis_qa_luts $QALUT
+
+

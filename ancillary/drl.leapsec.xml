@@ -1,0 +1,22 @@
+	<!-- LEAPSEC (every 3 days) -->
+	<RemoteSite
+		run="true"
+		test="false"
+		verbose="false"
+
+		siteTitle="LeapSec"
+		localFileName="ancillary/temporal/"
+		pollingHours="72"
+
+		protocol="ftp"
+		user="anonymous"
+		password="your email address here"
+
+		sortby="date"
+		hostName="is.sci.gsfc.nasa.gov"
+		remoteFileName="^leapsec.*"
+		remoteDirectory="ancillary/temporal"
+		dsmName="drl.leapsec"
+		>
+		<Schedule minutes="52" hours="2" daysOfWeek="Mon,Wed,Fri" startDelaySecs="10"/>
+	</RemoteSite>

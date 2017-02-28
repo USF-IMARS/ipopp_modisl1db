@@ -1,0 +1,26 @@
+#!/bin/bash
+WRAPPERHOME=../wrapper/l1atob
+INPUTHOME=../testdata/input
+OUTPUTHOME=../testdata/output
+
+MOD03=$INPUTHOME/GEOTerra.hdf
+MOD01=$INPUTHOME/L1ATerra.hdf
+MOD021KM=$OUTPUTHOME/L1B1KMTerra.hdf
+MOD02HKM=$OUTPUTHOME/L1BHKMTerra.hdf
+MOD02QKM=$OUTPUTHOME/L1BQKMTerra.hdf
+MOD02OBC=$OUTPUTHOME/L1BOKMTerra.hdf
+REFLUT=$INPUTHOME/MOD02_Reflective_LUTs.V6.1.12.3a.hdf
+EMILUT=$INPUTHOME/MOD02_Emissive_LUTs.V6.1.12.3a.hdf
+QALUT=$INPUTHOME/MOD02_QA_LUTs.V6.1.12.3a.hdf
+
+
+$WRAPPERHOME/run \
+    modis.mxd01 $MOD01 \
+    modis.mxd03 $MOD03 \
+    modis.mxd021km $MOD021KM \
+    modis.mxd02hkm $MOD02HKM \
+    modis.mxd02qkm $MOD02QKM \
+    modis_reflective_luts $REFLUT \
+    modis_emissive_luts $EMILUT \
+    modis_qa_luts $QALUT
+

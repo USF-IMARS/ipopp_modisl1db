@@ -1,0 +1,38 @@
+<!-- XML document that can be expanded into a station.cfgfile
+     for most NCS stations (everything past L1 - products, basically -->
+<!-- MODL1 Terra station - no eph or att inputs -->
+<!-- We should have the Terra and Aqua stations share their wrapper files -->
+<NCS_Station name="Mod L1A Terra" verbose_logging="true">
+	<group>Mod-L1A grp1</group>
+	<algorithm>
+		<installation>{cfg_nisgs_home}/SPA/modisl1db/wrapper/l0tol1/installation.xml</installation>
+		<!-- The version should really be in the installation file
+			 and we should pick it up from there -->
+		<version>modisl1db1.8</version>
+	</algorithm>
+	<inputs>
+		<product type="drl.terra.modis.pds" wrappertype="modis.pds"/>
+                <ancillary select="time" type="drl.leapsec" wrappertype="LEAPSEC" />
+                <ancillary select="time" type="drl.utcpole" wrappertype="UTCPOLE" />
+	</inputs>
+	<setup>
+
+
+	  hostName="is.sci.gsfc.nasa.gov"
+	  user="anonymous"
+	  password="your email address		<!-- Set starttime string here -->
+		<Dsm_command result="passDate" class="cfg_pass" method="getAos"/>
+		<Ncs_date name="passDate" getValue="starttime"/>
+		<!-- and put the satellite where the algorithm will find it -->
+		<Ncs_set name="sat" value="{cfg_satellite}"/>
+                <Ncs_set name="geocheck_threshold" value="50"/>
+	</setup>
+	<outputs>
+		<product type="drl.terra.modis.mxd01"
+			filename="{dataDirectory}{productDirectory}{/}MOD01.{starttime}.hdf"
+			wrappertype="modis.mxd01"/>
+		<product type="drl.terra.modis.mxd03"
+			filename="{dataDirectory}{productDirectory}{/}MOD03.{starttime}.hdf"
+			wrappertype="modis.mxd03"/>
+	</outputs>
+</NCS_Station>
