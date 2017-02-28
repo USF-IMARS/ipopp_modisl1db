@@ -15,7 +15,7 @@ import subprocess
 # static helpers (common w/ other test classes):
 ###########################################################
 class helper:
-    wrapper_home = '/home/ipopp/drl/SPA/modisl1db/wrapper/l0tol1'
+    wrapper_home = '/home/ipopp/drl/station-tester/wrapper/lib'
     testoutdir = "../testdata/output"
     testindir = "../testdata/input"
     testscriptdir = "./"
@@ -125,6 +125,7 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
             (
                 """\
                 {WRAP_HOME}/run \
+                    /home/ipopp/drl/SPA/modisl1db/wrapper/l0tol1 \
                     modis.pds {IN_DIR}/{PDSFILE} \
                     modis.mxd01 {OUT_DIR}/{MOD01} \
                     modis.mxd03 {OUT_DIR}/{MODGEO} \
@@ -157,6 +158,7 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
         self._test_cmd(
             (
                 helper.wrapper_home+'/run'
+                ' /home/ipopp/drl/SPA/modisl1db/wrapper/l0tol1'
                 ' modis.pds '   + helper.testindir  + '/P0420064AAAAAAAAAAAAAA12249171145001.PDS'
                 ' modis.mxd01 ' + helper.testoutdir + '/L1ATerra.hdf'
                 ' modis.mxd03 ' + helper.testoutdir + '/GEOTerra.hdf'

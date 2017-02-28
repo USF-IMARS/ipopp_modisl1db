@@ -40,7 +40,6 @@ class Test_modisl1db_usingBashScripts(unittest.TestCase):
             ['L1B1KMAqua.hdf', 'L1BHKMAqua.hdf', 'L1BQKMAqua.hdf'],
             ['errfileL1B']
         )
-        helper._cleanup_l1atob()
 
     def test_l1a_to_b_terra(self):
         self._run_bash_test(
@@ -48,4 +47,3 @@ class Test_modisl1db_usingBashScripts(unittest.TestCase):
             ['L1B1KMTerra.hdf', 'L1BHKMTerra.hdf', 'L1BQKMTerra.hdf'],
             ['errfileL1B']
         )
-        helper._cleanup_l1atob()
