@@ -4,6 +4,8 @@ SeaDAS library for commonly used functions within other python scripts
 
 """
 
+from ssl import SSLError
+
 def getUrlFileName(openUrl):
     """
     get filename from URL - use content-disposition if provided
@@ -41,6 +43,7 @@ def httpdl(url, localpath='.', outputfilename=None, ntries=5, uncompress=False, 
     sleepytime = 15 + ((30. * (1. / (float(ntries) + 1.))))
 
     timeout = 10
+    final_timeout = 60  # max seconds until give up on request
 
     if not os.path.exists(localpath):
         os.umask(0002)
@@ -50,7 +53,13 @@ def httpdl(url, localpath='.', outputfilename=None, ntries=5, uncompress=False, 
     status = 0
     response = None
     try:
-        response = urlopen(req, timeout=timeout)
+        while (timeout < final_timeout):
+            try:
+                response = urlopen(req, timeout=timeout)
+                break
+            except SSLError:
+                timeout *= 2
+
     except URLError:
         if ntries > 0:
             if response:
@@ -310,5 +319,3 @@ def check_sensor(file):
         return 'meris'
     else:
         return 'X'
-
-     
