@@ -4,6 +4,7 @@
 testdata/output*
 *_backup
 *__pycache__
+*.pyc
 
 # large, frequently changing files not tracked by git:
 testdata
