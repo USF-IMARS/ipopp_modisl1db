@@ -4,8 +4,8 @@
 import unittest
 import subprocess
 
-# local modules:
-from TestHelper import TestHelper
+# dependencies:
+from StationTester.TestHelper import TestHelper
 
 class Test_modisl1db_usingBashScripts(unittest.TestCase):
     def setup(self):
