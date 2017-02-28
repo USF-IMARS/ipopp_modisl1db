@@ -1,22 +1,22 @@
 #!/usr/bin/env python
 
-import os
-import shutil
+# std modules:
 import unittest
 import subprocess
 
-from modisl1db_directWrapperCall_test import helper  # to load all those helpers
+# local modules:
+from TestHelper import TestHelper
 
 class Test_modisl1db_usingBashScripts(unittest.TestCase):
     def setup(self):
-        helper.mySetup()
+        TestHelper.mySetup()
 
     def teardown(self):
-        helper.myTeardown()
+        TestHelper.myTeardown()
 
     def _run_bash_test(self, script, products, errfiles):
-        subprocess.call(script, stdout=helper.FNULL, stderr=subprocess.STDOUT)
-        helper.test_products_and_errfiles(self, products, errfiles)
+        subprocess.call(script, stdout=TestHelper.FNULL, stderr=subprocess.STDOUT)
+        TestHelper._test_products_and_errfiles(self, products, errfiles)
 
     # tests:
     ##################################
