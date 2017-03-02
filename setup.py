@@ -3,8 +3,6 @@
 from setuptools import setup
 import io
 
-import StationTester
-
 def read(*filenames, **kwargs):
     encoding = kwargs.get('encoding', 'utf-8')
     sep = kwargs.get('sep', '\n')

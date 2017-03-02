@@ -1,7 +1,7 @@
 #!/bin/bash
 WRAPPERHOME=../wrapper/l0tol1
-INPUTHOME=../testdata/input
-OUTPUTHOME=../testdata/output
+INPUTHOME=~/drl/SPA/StationTester/test_data/input
+OUTPUTHOME=~/drl/SPA/StationTester/test_data/output
 
 PDSFILE=$INPUTHOME/P1540064AAAAAAAAAAAAAA12255195533001.PDS
 MOD01=$OUTPUTHOME/L1AAqua.hdf
@@ -20,6 +20,3 @@ $WRAPPERHOME/run \
     leapsec $INPUTHOME/leapsec.dat \
     utcpole $INPUTHOME/utcpole.dat \
     geocheck_threshold 50
-
-
-

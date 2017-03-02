@@ -1,7 +1,7 @@
 #!/bin/bash
 WRAPPERHOME=../wrapper/l1atob
-INPUTHOME=../testdata/input
-OUTPUTHOME=../testdata/output
+INPUTHOME=~/drl/SPA/StationTester/test_data/input
+OUTPUTHOME=~/drl/SPA/StationTester/test_data/output
 
 MOD03=$INPUTHOME/GEOAqua.hdf
 MOD01=$INPUTHOME/L1AAqua.hdf
@@ -22,5 +22,3 @@ $WRAPPERHOME/run \
     modis_reflective_luts $REFLUT \
     modis_emissive_luts $EMILUT \
     modis_qa_luts $QALUT
-
-
