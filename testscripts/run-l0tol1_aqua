@@ -1,7 +1,7 @@
 #!/bin/bash
 WRAPPERHOME=../wrapper/l0tol1
-INPUTHOME=~/drl/SPA/StationTester/test_data/input
-OUTPUTHOME=~/drl/SPA/StationTester/test_data/output
+INPUTHOME=~/drl/StationTester/test_data/input
+OUTPUTHOME=~/drl/StationTester/test_data/output
 
 PDSFILE=$INPUTHOME/P1540064AAAAAAAAAAAAAA12255195533001.PDS
 MOD01=$OUTPUTHOME/L1AAqua.hdf

@@ -8,14 +8,14 @@ import subprocess
 from StationTester.TestHelper import TestHelper
 
 class Test_modisl1db_usingBashScripts(unittest.TestCase):
-    def setup(self):
+    def setUp(self):
         TestHelper.mySetup()
 
-    def teardown(self):
+    def tearDown(self):
         TestHelper.myTeardown()
 
     def _run_bash_test(self, script, products, errfiles):
-        subprocess.call(script, stdout=TestHelper.FNULL, stderr=subprocess.STDOUT)
+        subprocess.call(script, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         TestHelper._test_products_and_errfiles(self, products, errfiles)
 
     # tests:
