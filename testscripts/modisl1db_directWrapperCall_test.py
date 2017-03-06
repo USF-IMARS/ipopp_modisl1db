@@ -28,21 +28,17 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
         TestHelper.SPA_command( self,
             (
                 """\
-                {WRAP_HOME}/run \
                     /home/ipopp/drl/SPA/modisl1db/wrapper/l0tol1 \
-                    modis.pds {IN_DIR}/{PDSFILE} \
-                    modis.mxd01 {OUT_DIR}/{MOD01} \
-                    modis.mxd03 {OUT_DIR}/{MODGEO} \
+                    modis.pds $INPUT/{PDSFILE} \
+                    modis.mxd01 $OUTPUT/{MOD01} \
+                    modis.mxd03 $OUTPUT/{MODGEO} \
                     sat {SAT} \
-                    gbad_att {IN_DIR}/{ATTFILE1} \
-                    gbad_eph {IN_DIR}/{EPHFILE1} \
-                    leapsec {IN_DIR}/leapsec.dat \
-                    utcpole {IN_DIR}/utcpole.dat \
+                    gbad_att $INPUT/{ATTFILE1} \
+                    gbad_eph $INPUT/{EPHFILE1} \
+                    leapsec $INPUT/leapsec.dat \
+                    utcpole $INPUT/utcpole.dat \
                     geocheck_threshold 50\
                 """.format(
-                    WRAP_HOME = TestHelper.wrapper_home,
-                    IN_DIR    = TestHelper.testindir,
-                    OUT_DIR   = TestHelper.testoutdir,
                     PDSFILE   = 'P1540064AAAAAAAAAAAAAA12255195533001.PDS',
                     MOD01     = 'L1AAqua.hdf',
                     MODGEO    = 'GEOAqua.hdf',
@@ -61,14 +57,13 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
         # in-line substitutions to build up command:
         TestHelper.SPA_command( self,
             (
-                TestHelper.wrapper_home+'/run'
                 ' /home/ipopp/drl/SPA/modisl1db/wrapper/l0tol1'
-                ' modis.pds '   + TestHelper.testindir  + '/P0420064AAAAAAAAAAAAAA12249171145001.PDS'
-                ' modis.mxd01 ' + TestHelper.testoutdir + '/L1ATerra.hdf'
-                ' modis.mxd03 ' + TestHelper.testoutdir + '/GEOTerra.hdf'
+                ' modis.pds $INPUT/P0420064AAAAAAAAAAAAAA12249171145001.PDS'
+                ' modis.mxd01 $OUTPUT/L1ATerra.hdf'
+                ' modis.mxd03 $OUTPUT/GEOTerra.hdf'
                 ' sat '         + 'TERRA'
-                ' leapsec '     + TestHelper.testindir  + '/leapsec.dat'
-                ' utcpole '     + TestHelper.testindir  + '/utcpole.dat'
+                ' leapsec $INPUT/leapsec.dat'
+                ' utcpole $INPUT/utcpole.dat'
                 ' geocheck_threshold 50'
             ),
             ['L1ATerra.hdf', 'GEOTerra.hdf'],
