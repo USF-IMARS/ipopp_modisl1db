@@ -9,7 +9,6 @@ NOTE: l1atob tests NOT re-created.
 
 # std modules:
 import unittest
-import subprocess
 
 # dependencies:
 from StationTester.TestHelper import TestHelper
@@ -22,21 +21,11 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
     def teardown(self):
         TestHelper.myTeardown()
 
-    def _test_cmd(self, command, products, errfiles, expected_return_value):
-        print(command)
-        return_value = subprocess.call(  # use check_call to check for malformed command
-            command, shell=True, stdout=TestHelper.FNULL, stderr=subprocess.STDOUT
-        )
-
-        TestHelper._test_products_and_errfiles(self, products, errfiles)
-
-        self.assertEquals(return_value, expected_return_value)
-
     # tests:
     #########################
     def test_l0_to_l1_aqua(self):
         # using "".format() kwargs to make command:
-        self._test_cmd(
+        TestHelper.SPA_command( self,
             (
                 """\
                 {WRAP_HOME}/run \
@@ -70,7 +59,7 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
 
     def test_l0_to_l1_terra(self):
         # in-line substitutions to build up command:
-        self._test_cmd(
+        TestHelper.SPA_command( self,
             (
                 TestHelper.wrapper_home+'/run'
                 ' /home/ipopp/drl/SPA/modisl1db/wrapper/l0tol1'

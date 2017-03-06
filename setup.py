@@ -30,7 +30,7 @@ setup(name='modisl1db',
     install_requires=[
     ],
     dependency_links = [
-        'https://github.com/USF-IMARS/StationTester/tarball/master#egg=StationTester-0.0.1'
+        'https://github.com/USF-IMARS/StationTester/tarball/master#egg=StationTester-0.0.2'
     ]
     #packages=['myBoilerplatePackageName']
 )
