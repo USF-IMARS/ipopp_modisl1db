@@ -47,9 +47,8 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
                     EPHFILE1  = 'P1540957AAAAAAAAAAAAAA12255195533001.eph'
                 )
             ),
-            ['L1AAqua.hdf', 'GEOAqua.hdf'],
-            ['errfileAquaGEO', 'errfileL1A'],
-            0
+            products=['L1AAqua.hdf', 'GEOAqua.hdf'],
+            errfiles=['errfileAquaGEO', 'errfileL1A']
         )
 
 
@@ -66,9 +65,8 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
                 ' utcpole $INPUT/utcpole.dat'
                 ' geocheck_threshold 50'
             ),
-            ['L1ATerra.hdf', 'GEOTerra.hdf'],
-            ['errfileTerraGEO', 'errfileL1A'],
-            0
+            products=['L1ATerra.hdf', 'GEOTerra.hdf'],
+            errfiles=['errfileTerraGEO', 'errfileL1A'],
         )
 
     # TODO: re-create these also:
