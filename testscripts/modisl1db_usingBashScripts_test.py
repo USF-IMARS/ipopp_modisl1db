@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 # std modules:
+import os
+import shutil
 import unittest
 import subprocess
 
@@ -13,10 +15,45 @@ class Test_modisl1db_usingBashScripts(unittest.TestCase):
 
     def tearDown(self):
         TestHelper.myTeardown()
+        self._del_errfiles()
+        self._del_stdfiles()
+        self._cleanup_l1atob()
 
     def _run_bash_test(self, script, products, errfiles):
         subprocess.call(script, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        TestHelper._test_products_and_errfiles(self, products, errfiles)
+        TestHelper._expect_empty_errfiles(self, errfiles, TestHelper.testscriptdir)
+        TestHelper._expect_files(self, products, TestHelper.testoutdir)
+
+
+    def _del_errfiles(self):
+        print("rm errfile*...")
+        filelist = [ f for f in os.listdir(TestHelper.testscriptdir) if f.startswith('errfile')]
+        for f in filelist:
+            os.remove(os.path.join(TestHelper.testscriptdir, f))
+
+    def _del_stdfiles(self):
+        print("rm stdfile*...")
+        filelist = [ f for f in os.listdir(TestHelper.testscriptdir) if f.startswith('stdfile')]
+        for f in filelist:
+            os.remove(os.path.join(TestHelper.testscriptdir, f))
+
+    def _cleanup_l1atob(self):
+        print("rm {*hdf, *pcf}...")
+        filelist = ([
+            f for f in os.listdir(TestHelper.testscriptdir)
+            if (
+                f.endswith('.hdf') or
+                f.endswith('.pcf')
+            )
+        ])
+        for f in filelist:
+            os.remove(os.path.join(TestHelper.testscriptdir, f))
+
+        print("rm *_logs-pcf/...")
+        folderlist = ([f for f in os.listdir(TestHelper.testscriptdir) if f.endswith('_logs-pcf')])
+        for f in folderlist:
+            shutil.rmtree(os.path.join(TestHelper.testscriptdir, f))
+
 
     # tests:
     ##################################
