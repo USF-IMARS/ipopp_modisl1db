@@ -6,9 +6,14 @@ import shutil
 import unittest
 import subprocess
 
-# dependencies:
+from nose.tools import nottest
+
 from StationTester.TestHelper import TestHelper
 
+ # NOTE: @nottest disables usage from nosetests b/c these tests are not
+ #          properly sandboxed. They fail if run from outside of testscripts,
+#           and they spew files all over the cwd.
+@nottest
 class Test_modisl1db_usingBashScripts(unittest.TestCase):
     def setUp(self):
         TestHelper.mySetup()

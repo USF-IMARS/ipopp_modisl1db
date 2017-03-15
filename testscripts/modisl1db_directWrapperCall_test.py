@@ -28,7 +28,7 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
         TestHelper.SPA_command( self,
             (
                 """\
-                    /home/ipopp/drl/SPA/modisl1db/wrapper/l0tol1 \
+                    ~/drl/SPA/modisl1db/wrapper/l0tol1 \
                     modis.pds $INPUT/{PDSFILE} \
                     modis.mxd01 $OUTPUT/{MOD01} \
                     modis.mxd03 $OUTPUT/{MODGEO} \
@@ -56,7 +56,7 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
         # in-line substitutions to build up command:
         TestHelper.SPA_command( self,
             (
-                ' /home/ipopp/drl/SPA/modisl1db/wrapper/l0tol1'
+                ' ~/drl/SPA/modisl1db/wrapper/l0tol1'
                 ' modis.pds $INPUT/P0420064AAAAAAAAAAAAAA12249171145001.PDS'
                 ' modis.mxd01 $OUTPUT/L1ATerra.hdf'
                 ' modis.mxd03 $OUTPUT/GEOTerra.hdf'
