@@ -11,21 +11,21 @@ NOTE: l1atob tests NOT re-created.
 import unittest
 
 # dependencies:
-from StationTester.TestHelper import TestHelper
+from StationTester import test_helper
 
 class Test_modisl1db_directWrapperCall(unittest.TestCase):
 
     def setup(self):
-        TestHelper.mySetup()
+        test_helper.SPATestSetUp()
 
     def teardown(self):
-        TestHelper.myTeardown()
+        test_helper.SPATestTearDown()
 
     # tests:
     #########################
     def test_l0_to_l1_aqua(self):
         # using "".format() kwargs to make command:
-        TestHelper.SPA_command( self,
+        test_helper.SPA_command( self,
             (
                 """\
                     ~/drl/SPA/modisl1db/wrapper/l0tol1 \
@@ -54,7 +54,7 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
 
     def test_l0_to_l1_terra(self):
         # in-line substitutions to build up command:
-        TestHelper.SPA_command( self,
+        test_helper.SPA_command( self,
             (
                 ' ~/drl/SPA/modisl1db/wrapper/l0tol1'
                 ' modis.pds $INPUT/P0420064AAAAAAAAAAAAAA12249171145001.PDS'
@@ -76,7 +76,6 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
     #         ['L1B1KMAqua.hdf', 'L1BHKMAqua.hdf', 'L1BQKMAqua.hdf'],
     #         ['errfileL1B']
     #     )
-    #     TestHelper._cleanup_l1atob()
     #
     # def test_l1a_to_b_terra(self):
     #     self._test_cmd(
@@ -84,4 +83,3 @@ class Test_modisl1db_directWrapperCall(unittest.TestCase):
     #         ['L1B1KMTerra.hdf', 'L1BHKMTerra.hdf', 'L1BQKMTerra.hdf'],
     #         ['errfileL1B']
     #     )
-    #    TestHelper._cleanup_l1atob()
