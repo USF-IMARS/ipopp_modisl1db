@@ -19,7 +19,7 @@
     <InitAlgorithm debug="{cfg_debug}"
       file="{cfg_nisgs_home}/SPA/modisl1db/wrapper/l0tol1/installation.xml" result="cfg_algo.OBJ"/>
     <Ncs_print text="Algorithm Mod L1A Aqua initialized"/>
-    <Ncs_set name="version" value="modisl1db1.8"/>
+    <Ncs_set name="version" value="modisl1db1.9.1"/>
   </SETUP>
   <EXECUTE>
     <!-- get first input product  -->
@@ -27,28 +27,28 @@
     <Ncs_set name="otherInputTypes" value=""/>
     <Ncs_log text="Reserving product drl.aqua.modis.pds"/>
     <Dsm_command blockflag="true" class="DSM" debug="{cfg_debug}"
-      log="true" method="reserveProduct" result="drl.aqua.modis.pds.OBJ">
+      log="true" method="reserveProduct" result="drl_aqua_modis_pds_OBJ">
       <String value="drl.aqua.modis.pds"/>
       <String value="{otherInputTypes}"/>
     </Dsm_command>
     <!-- Put the reserved product object into "reservedProduct" -->
     <!-- (so NCS can find it to fail this job if needed) -->
-    <Ncs_copy copy="reservedProduct" source="drl.aqua.modis.pds.OBJ"/>
+    <Ncs_copy copy="reservedProduct" source="drl_aqua_modis_pds_OBJ"/>
     <!-- get pass  -->
     <Ncs_log text="Getting pass for drl.aqua.modis.pds"/>
-    <Dsm_command class="drl.aqua.modis.pds.OBJ" debug="{cfg_debug}"
+    <Dsm_command class="drl_aqua_modis_pds_OBJ" debug="{cfg_debug}"
       method="getPass" result="cfg_pass"/>
     <!-- get date  -->
     <Ncs_log text="Getting date/time"/>
     <Ncs_date name="cfg_currenttime" setValue="now"/>
-    <Dsm_command class="drl.aqua.modis.pds.OBJ" debug="{cfg_debug}"
+    <Dsm_command class="drl_aqua_modis_pds_OBJ" debug="{cfg_debug}"
       method="getStartTime" result="cfg_starttime"/>
-    <Dsm_command class="drl.aqua.modis.pds.OBJ" debug="{cfg_debug}"
+    <Dsm_command class="drl_aqua_modis_pds_OBJ" debug="{cfg_debug}"
       method="getStopTime" result="cfg_stoptime"/>
     <Ncs_log text="scan start time is {cfg_starttime}"/>
     <Ncs_log text="scan end time is {cfg_stoptime}"/>
     <Ncs_log text="current time is {cfg_currenttime}"/>
-    
+
 
     <!-- Extract the hour, and munge it for quarter-day -->
     <!--<Ncs_date debug="{cfg_debug}" getValue="cfg_quarterday"
@@ -63,14 +63,14 @@
       pattern="15|16|17|18|19|20" replacement="18" result="cfg_quarterday"/>
     <Ncs_log text="cfg_quarterday is {cfg_quarterday}"/>-->
     <!-- get satellite -->
-    <Dsm_command class="drl.aqua.modis.pds.OBJ" debug="{cfg_debug}"
+    <Dsm_command class="drl_aqua_modis_pds_OBJ" debug="{cfg_debug}"
       method="getSpacecraft" result="cfg_satellite"/>
     <!-- get file name  -->
     <Ncs_log text="Getting file name (DATA resource)"/>
-    <Dsm_command class="DSM" debug="{cfg_debug}" method="getProductPath" result="drl.aqua.modis.pds">
-      <Object value="drl.aqua.modis.pds.OBJ"/>
+    <Dsm_command class="DSM" debug="{cfg_debug}" method="getProductPath" result="drl_aqua_modis_pds">
+      <Object value="drl_aqua_modis_pds_OBJ"/>
     </Dsm_command>
-    <Ncs_log text="File name is {drl.aqua.modis.pds}"/>
+    <Ncs_log text="File name is {drl_aqua_modis_pds}"/>
     <!-- get remaining products  -->
     <!-- set up the product filename variables  -->
     <!--	foo.filename = filename (with absolute path removed)
@@ -78,20 +78,20 @@
 		foo.ext = extension
 		The things we do to get around the limitations of this
 		XML-based scripting junk ... -->
-    <Ncs_getMatch name="{drl.aqua.modis.pds}" pattern="[^{/}]*$" result="drl.aqua.modis.pds.filename"/>
-    <Ncs_set name="drl.aqua.modis.pds.base" value="{drl.aqua.modis.pds.filename}"/>
-    <Ncs_set name="drl.aqua.modis.pds.ext" value=""/>
-    <Ncs_test name="{drl.aqua.modis.pds.filename}" pattern="\\." result="hasadot"/>
-    <Ncs_getMatch name="{drl.aqua.modis.pds.filename}" pattern="[^.]*$"
-      result="drl.aqua.modis.pds.ext" runFlag="{hasadot}"/>
-    <Ncs_editValue name="{drl.aqua.modis.pds.filename}"
-      pattern="\\.{drl.aqua.modis.pds.ext}$" replacement=""
-      result="drl.aqua.modis.pds.base" runFlag="{hasadot}"/>
+    <Ncs_getMatch name="{drl_aqua_modis_pds}" pattern="[^{/}]*$" result="drl_aqua_modis_pds_filename"/>
+    <Ncs_set name="drl_aqua_modis_pds_base" value="{drl_aqua_modis_pds_filename}"/>
+    <Ncs_set name="drl_aqua_modis_pds_ext" value=""/>
+    <Ncs_test name="{drl_aqua_modis_pds_filename}" pattern="\\." result="hasadot"/>
+    <Ncs_getMatch name="{drl_aqua_modis_pds_filename}" pattern="[^.]*$"
+      result="drl_aqua_modis_pds_ext" runFlag="{hasadot}"/>
+    <Ncs_editValue name="{drl_aqua_modis_pds_filename}"
+      pattern="\\.{drl_aqua_modis_pds_ext}$" replacement=""
+      result="drl_aqua_modis_pds_base" runFlag="{hasadot}"/>
 <!-- pre time stamp -->
 <Dsm_command class="DSM" debug="{cfg_debug}" method="getTimeWindow" result="cfg_timewindow_pre">
 <String value=""/> <!-- *****************24 does not work somehow, Ask Bob -->
 <String value=""/>
-<String value="14"/>  
+<String value="14"/>
 <String value=""/>
 </Dsm_command>
 <!-- leapsec-->
@@ -107,7 +107,7 @@
 <Object value="cfg_timewindow_pre"/>
 </Dsm_command>
 <Ncs_log runFlag="true" text="leapsec used is {leapsec}"/>
-<Ncs_log runFlag="true" text="utcpole used is {utcpole}"/>   
+<Ncs_log runFlag="true" text="utcpole used is {utcpole}"/>
 
 
     <Dsm_command class="cfg_pass" method="getAos" result="passDate"/>
@@ -122,20 +122,20 @@
       method="getProductDirectory" result="productDirectory">
       <String value="drl.aqua.modis.mxd01"/>
     </Dsm_command>
-    <Ncs_set name="drl.aqua.modis.mxd01" value="{dataDirectory}{productDirectory}{/}MYD01.{starttime}.hdf"/>
-    <Ncs_set name="allOutputs" value="{allOutputs} {drl.aqua.modis.mxd01}"/>
-    <Ncs_log text="storing drl.aqua.modis.mxd01 at {drl.aqua.modis.mxd01}"/>
+    <Ncs_set name="drl_aqua_modis_mxd01" value="{dataDirectory}{productDirectory}{/}MYD01.{starttime}.hdf"/>
+    <Ncs_set name="allOutputs" value="{allOutputs} {drl_aqua_modis_mxd01}"/>
+    <Ncs_log text="storing drl.aqua.modis.mxd01 at {drl_aqua_modis_mxd01}"/>
     <Dsm_command class="DSM" debug="{cfg_debug}"
       method="getProductDirectory" result="productDirectory">
       <String value="drl.aqua.modis.mxd03"/>
     </Dsm_command>
-    <Ncs_set name="drl.aqua.modis.mxd03" value="{dataDirectory}{productDirectory}{/}MYD03.{starttime}.hdf"/>
-    <Ncs_set name="allOutputs" value="{allOutputs} {drl.aqua.modis.mxd03}"/>
-    <Ncs_log text="storing drl.aqua.modis.mxd03 at {drl.aqua.modis.mxd03}"/>
+    <Ncs_set name="drl_aqua_modis_mxd03" value="{dataDirectory}{productDirectory}{/}MYD03.{starttime}.hdf"/>
+    <Ncs_set name="allOutputs" value="{allOutputs} {drl_aqua_modis_mxd03}"/>
+    <Ncs_log text="storing drl.aqua.modis.mxd03 at {drl_aqua_modis_mxd03}"/>
     <Ncs_log text="allOutputs are: {allOutputs}"/>
-    <Ncs_set name="modis.pds" value="{drl.aqua.modis.pds}"/>
-    <Ncs_set name="modis.mxd01" value="{drl.aqua.modis.mxd01}"/>
-    <Ncs_set name="modis.mxd03" value="{drl.aqua.modis.mxd03}"/>
+    <Ncs_set name="modis.pds" value="{drl_aqua_modis_pds}"/>
+    <Ncs_set name="modis.mxd01" value="{drl_aqua_modis_mxd01}"/>
+    <Ncs_set name="modis.mxd03" value="{drl_aqua_modis_mxd03}"/>
     <!-- run the algorithm (to massive applause)  -->
     <Ncs_log text="launching algorithm Mod L1A Aqua"/>
     <RunAlgorithm algorithm="cfg_algo.OBJ" debug="{cfg_debug}"/>
@@ -147,7 +147,7 @@
     <Ncs_log runFlag="true" text="Creating new product drl.aqua.modis.mxd01"/>
     <Dsm_command class="Product" debug="{cfg_debug}" method="new"
       result="drl.aqua.modis.mxd01.OBJ" runFlag="true">
-      <Object value="drl.aqua.modis.pds.OBJ"/>
+      <Object value="drl_aqua_modis_pds_OBJ"/>
       <String value="drl.aqua.modis.mxd01"/>
     </Dsm_command>
     <Dsm_command class="drl.aqua.modis.mxd01.OBJ" debug="{cfg_debug}"
@@ -155,11 +155,11 @@
       <String value="Mod L1A Aqua"/>
       <String value="{version}"/>
     </Dsm_command>
-    <Ncs_log runFlag="true" text="Adding file {drl.aqua.modis.mxd01} (as DATA resource)"/>
+    <Ncs_log runFlag="true" text="Adding file {drl_aqua_modis_mxd01} (as DATA resource)"/>
     <Dsm_command class="DSM" debug="{cfg_debug}"
       method="addDataResource" runFlag="true">
       <Object value="drl.aqua.modis.mxd01.OBJ"/>
-      <String value="{drl.aqua.modis.mxd01}"/>
+      <String value="{drl_aqua_modis_mxd01}"/>
     </Dsm_command>
     <Ncs_log runFlag="true" text="Adding ancillary drl.leapsec (file {leapsec})"/>
     <Dsm_command class="drl.aqua.modis.mxd01.OBJ" debug="{cfg_debug}"
@@ -181,7 +181,7 @@
     <Ncs_log runFlag="true" text="Creating new product drl.aqua.modis.mxd03"/>
     <Dsm_command class="Product" debug="{cfg_debug}" method="new"
       result="drl.aqua.modis.mxd03.OBJ" runFlag="true">
-      <Object value="drl.aqua.modis.pds.OBJ"/>
+      <Object value="drl_aqua_modis_pds_OBJ"/>
       <String value="drl.aqua.modis.mxd03"/>
     </Dsm_command>
     <Dsm_command class="drl.aqua.modis.mxd03.OBJ" debug="{cfg_debug}"
@@ -189,11 +189,11 @@
       <String value="Mod L1A Aqua"/>
       <String value="{version}"/>
     </Dsm_command>
-    <Ncs_log runFlag="true" text="Adding file {drl.aqua.modis.mxd03} (as DATA resource)"/>
+    <Ncs_log runFlag="true" text="Adding file {drl_aqua_modis_mxd03} (as DATA resource)"/>
     <Dsm_command class="DSM" debug="{cfg_debug}"
       method="addDataResource" runFlag="true">
       <Object value="drl.aqua.modis.mxd03.OBJ"/>
-      <String value="{drl.aqua.modis.mxd03}"/>
+      <String value="{drl_aqua_modis_mxd03}"/>
     </Dsm_command>
     <Ncs_log runFlag="true" text="Adding ancillary drl.leapsec (file {leapsec})"/>
     <Dsm_command class="drl.aqua.modis.mxd03.OBJ" debug="{cfg_debug}"
@@ -215,7 +215,7 @@
     <!-- release reserved product to DSM  -->
     <Ncs_log text="Releasing reserved product drl.aqua.modis.pds"/>
     <Dsm_command class="DSM" debug="{cfg_debug}" method="releaseProduct">
-      <Object value="drl.aqua.modis.pds.OBJ"/>
+      <Object value="drl_aqua_modis_pds_OBJ"/>
     </Dsm_command>
     <Ncs_log text="Done with algorithm Mod L1A Aqua"/>
   </EXECUTE>
