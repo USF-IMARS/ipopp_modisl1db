@@ -48,7 +48,7 @@
     <Ncs_log text="scan start time is {cfg_starttime}"/>
     <Ncs_log text="scan end time is {cfg_stoptime}"/>
     <Ncs_log text="current time is {cfg_currenttime}"/>
-    
+
 
     <!-- Extract the hour, and munge it for quarter-day -->
     <!--<Ncs_date debug="{cfg_debug}" getValue="cfg_quarterday"
@@ -91,7 +91,7 @@
 <Dsm_command class="DSM" debug="{cfg_debug}" method="getTimeWindow" result="cfg_timewindow_pre">
 <String value=""/> <!-- *****************24 does not work somehow, Ask Bob -->
 <String value=""/>
-<String value="14"/>  
+<String value="14"/>
 <String value=""/>
 </Dsm_command>
 <!-- leapsec-->
@@ -107,7 +107,7 @@
 <Object value="cfg_timewindow_pre"/>
 </Dsm_command>
 <Ncs_log runFlag="true" text="leapsec used is {leapsec}"/>
-<Ncs_log runFlag="true" text="utcpole used is {utcpole}"/>   
+<Ncs_log runFlag="true" text="utcpole used is {utcpole}"/>
 
 
     <Dsm_command class="cfg_pass" method="getAos" result="passDate"/>
@@ -142,7 +142,12 @@
     <!-- and clean everything up - walk the outputs
 			creating new Products, decorating them with Resources,
 			and Ancillaries, and Storing them  -->
+    <Ncs_log text="before:{drl.terra.modis.mxd01}"/>
     <Ncs_copy copy="drl.terra.modis.mxd01" source="modis.mxd01"/>
+    <Ncs_log text="aafter:{drl.terra.modis.mxd01}"/>
+    <Ncs_log text="mxd01:{not_a_var_name}"/>
+
+
     <Ncs_copy copy="drl.terra.modis.mxd03" source="modis.mxd03"/>
     <Ncs_log runFlag="true" text="Creating new product drl.terra.modis.mxd01"/>
     <Dsm_command class="Product" debug="{cfg_debug}" method="new"
