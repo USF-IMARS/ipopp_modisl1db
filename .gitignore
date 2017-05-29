@@ -9,7 +9,7 @@ testdata/output*
 # large, frequently changing files not tracked by git:
 testdata
 ancillary_data.db
-algorithm/run/var
+#algorithm/run/var
 algorithm/run/data
 wrapper/lib
 
@@ -17,3 +17,10 @@ wrapper/lib
 errfile*
 stdfile*
 L1A_logs-pcf
+
+# files too big for github:
+algorithm/run/data/modis/static/dem30ARC_W60N0.hdf
+algorithm/run/data/modis/static/dem30ARC_W60N90.hdf
+algorithm/run/data/modis/static/dem30ARC_W180N90.hdf
+algorithm/run/data/modis/static/dem30ARC_E60N0.hdf
+algorithm/run/data/modis/static/dem30ARC_E60N90.hdf
